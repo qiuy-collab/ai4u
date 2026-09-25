@@ -73,18 +73,24 @@
   .hero__line { display: block; }
   .hero__word { display: inline-block; }
   .hero__caret { margin-left: 0.1em; }
-  .hero__sub {
-    margin-top: var(--space-l);
-    font-size: var(--text-lg);
-    line-height: 1.75;
-    color: var(--text-muted);
-  }
   .hero__hint {
     position: absolute;
     bottom: var(--space-l);
     left: clamp(1.25rem, 5vw, 6rem);
     font-size: var(--text-xs);
     color: var(--text-muted);
+  }
+  /* hero 随滚动被「推开」：scrub 直接映射用户滚动，非自主运动。
+     from 态不落静态规则；不支持 / reduced-motion 时内容常显 */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__title, .hero__prompt, .hero__hint {
+        animation: hero-sink linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 70vh;
+      }
+      @keyframes hero-sink { to { opacity: 0; transform: translateY(-5vh); } }
+    }
   }
   /* 键入式 stagger：动画只写在 no-preference 分支；from 态不落静态规则，
      JS 禁用 / reduced-motion 时文字直接完整可见 */
@@ -97,7 +103,7 @@
       from { opacity: 0; transform: translateY(0.35em); }
       to { opacity: 1; transform: translateY(0); }
     }
-  .hero__sub, .hero__hint {
+  .hero__hint {
       animation: hero-fade 0.6s var(--ease-out-expo) 0.9s both;
     }
     @keyframes hero-fade {
@@ -119,28 +125,38 @@
     line-height: 1.4;
     max-width: 22ch;
   }
-  .act-what__body {
-    margin-top: var(--space-m);
-    line-height: 1.9;
-    color: var(--text-muted);
-  }
-  .act-what__nos {
+  /* 短语跑马灯：破 gutter 通铺的墨带，两组相同短语无缝循环。
+     reduce / JS 禁用：轨道静止，第一组完整可读（无 from 态依赖） */
+  .marquee {
     margin-top: var(--space-xl);
+    margin-inline: calc(-1 * clamp(1.25rem, 5vw, 6rem));
+    overflow: hidden;
+    background: var(--ink-0);
+    color: var(--paper-0);
+  }
+  .marquee__track { display: flex; width: max-content; }
+  .marquee__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-l);
     list-style: none;
-    padding: 0;
-    border-top: 1px solid var(--border);
+    margin: 0;
+    padding: var(--space-m) var(--space-l) var(--space-m) 0;
   }
-  .act-what__no {
-    display: grid;
-    grid-template-columns: 3.5rem 10rem 1fr;
-    gap: var(--space-s);
-    align-items: baseline;
-    padding-block: var(--space-m);
-    border-bottom: 1px solid var(--border);
+  .marquee__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-l);
+    font-size: var(--text-h3);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
   }
-  .act-what__no-index { color: var(--accent); font-size: var(--text-sm); }
-  .act-what__no-key { font-weight: 700; font-size: var(--text-h3); }
-  .act-what__no-val { color: var(--text-muted); }
+  .marquee__x { color: var(--accent); font-size: var(--text-sm); }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee__track { animation: marquee-move 16s linear infinite; }
+    @keyframes marquee-move { to { transform: translateX(-50%); } }
+  }
 
   /* ---------- act 2 · 在忙什么（墨色幕） ---------- */
   .act-doing {
@@ -149,7 +165,6 @@
     padding-block: var(--section-loose);
   }
   .act-doing .promptline { color: color-mix(in oklab, var(--night-1) 62%, transparent); }
-  .act-doing__intro { margin-top: var(--space-s); color: color-mix(in oklab, var(--night-1) 72%, transparent); }
   .act-doing__timeline { position: relative; margin-top: var(--space-xl); }
   .act-doing__line {
     position: absolute;
@@ -180,8 +195,7 @@
     background: var(--ember-0);
     border-radius: 50%; /* 唯一允许的非 0 radius：节点是几何点不是 UI 面 */
   }
-  .act-doing__date { font-size: var(--text-xs); color: var(--ember-0); }
-  /* 线生长 + 节点点亮：CSS view() timeline（rung 1.5）。
+  /* 线生长 + 节点点亮 + 条目上浮：CSS view() timeline（rung 1.5）。
      不支持 / reduced-motion：无动画规则生效，元素即完整终态 */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
@@ -203,24 +217,57 @@
         from { opacity: 0.4; scale: 0.3; }
         to { opacity: 1; scale: 1; }
       }
+      .act-doing__item {
+        animation: doing-item-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 28%;
+      }
+      @keyframes doing-item-in {
+        from { opacity: 0.2; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     }
   }
-  .act-doing__title { margin-top: var(--space-2xs); font-size: var(--text-h3); font-weight: 700; }
-  .act-doing__desc {
-    margin-top: var(--space-xs);
-    color: color-mix(in oklab, var(--night-1) 72%, transparent);
-    line-height: 1.85;
-  }
+  /* 幕内只剩三个大词，字号升格补视觉分量 */
+  .act-doing__title { margin-top: 0; font-size: var(--text-h2); font-weight: 900; letter-spacing: -0.02em; }
 
-  /* ---------- act 3 · 新手入口（索引行） ---------- */
-  .act-start__answer { margin-top: var(--space-m); line-height: 1.9; color: var(--text-muted); }
-  .act-start__list { margin-top: var(--space-l); list-style: none; padding: 0; border-top: 1px solid var(--border); }
-  /* Act3 逐行浮现：scroll-driven（rung 1.5），每行进入视口时自行播放。
-     与时间线 scrub、荧光笔构成不同的动效词汇；from 态不落静态规则，
-     Firefox / reduced-motion 退化为完整终态。仅首页 Act3，列表页不受影响。 */
+  /* ---------- act 3 · 首页主体三入口（here / 文档 / join us） ---------- */
+  .act-start__entries {
+    margin-top: var(--space-l);
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .entry__link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-m);
+    align-items: baseline;
+    padding-block: var(--space-m);
+    text-decoration: none;
+    color: inherit;
+    min-height: 44px;
+  }
+  .entry__index { color: var(--accent); font-size: var(--text-sm); }
+  .entry__label {
+    font-size: clamp(1.75rem, 1.2rem + 2.8vw, 3.25rem);
+    font-weight: 900;
+    line-height: 1.15;
+  }
+  .entry__arrow {
+    color: var(--accent);
+    transform: translateX(0);
+    transition: transform var(--dur-fast) var(--ease-out-expo);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .entry__link:hover .entry__arrow,
+    .entry__link:focus-visible .entry__arrow { transform: translateX(6px); }
+  }
+  /* 入口逐行浮现：scroll-driven（rung 1.5），每行进入视口时自行播放。
+     from 态不落静态规则，Firefox / reduced-motion 退化为完整终态。仅首页 Act3。 */
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
-      .act-start__list .index-row {
+      .act-start__entries .entry {
         animation: act-start-row 0.6s var(--ease-out-expo) both;
         animation-timeline: view();
         animation-range: entry 0% cover 22%;
@@ -230,6 +277,7 @@
       from { opacity: 0; transform: translateY(14px); }
     }
   }
+  /* mono 小链接：ActStart 旧 CTA 样式，现由 404 页「回到首页」复用，勿删 */
   .act-start__more {
     display: inline-flex;
     align-items: center;
@@ -273,7 +321,29 @@
   /* ---------- act 4 · 加入 ---------- */
   .act-join { padding-block: var(--section-loose); }
   .act-join__mega { margin-top: var(--space-m); font-size: var(--text-mega); line-height: 1.3; }
-  .act-join__body { margin-top: var(--space-m); color: var(--text-muted); line-height: 1.9; }
+  /* mega 升起 + 加入卡浮现：scroll-driven，from 态不落静态规则 */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .act-join__mega {
+        animation: mega-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 32%;
+      }
+      @keyframes mega-in {
+        from { opacity: 0.2; transform: translateY(0.25em); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .join-card {
+        animation: join-card-in linear both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 30%;
+      }
+      @keyframes join-card-in {
+        from { opacity: 0.25; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  }
 
   .join-card {
     margin-top: var(--space-xl);
@@ -482,8 +552,8 @@
 
   /* ---------- 移动端（390 基本可用：重动效简化） ---------- */
   @media (max-width: 780px) {
-    .act-what__no { grid-template-columns: 2.2rem 1fr; }
-    .act-what__no-val { grid-column: 2; }
+    .marquee__group { gap: var(--space-m); padding: var(--space-s) var(--space-m) var(--space-s) 0; }
+    .marquee__item { gap: var(--space-m); font-size: 1.25rem; }
     .index-row__link { grid-template-columns: 1.6rem 1fr auto; }
     .index-row__cat { display: none; }
     .join-card { grid-template-columns: 1fr; }
@@ -536,12 +606,33 @@
   }
   .hero__prompt { color: rgba(242, 239, 232, 0.62); }
   .hero__title { margin-top: var(--space-m); max-width: 10ch; color: var(--paper-0); }
-  .hero__sub { color: rgba(242, 239, 232, 0.72); }
   .hero__hint { color: rgba(242, 239, 232, 0.6); }
 
   .act-what__statement { line-height: 1.22; max-width: 18ch; }
-  .act-what__no { transition: background-color var(--dur-std) var(--ease-out-expo), padding-inline var(--dur-std) var(--ease-out-expo); }
-  .act-what__no:hover { background: rgba(246, 207, 69, 0.18); padding-inline: var(--space-s); }
+  /* 大字入场：blur + 上浮 scrub（view()），from 态只在 keyframes */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .act-what__statement {
+        animation: statement-in linear both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 35%;
+      }
+      @keyframes statement-in {
+        from { opacity: 0.15; filter: blur(14px); transform: translateY(0.2em); }
+        to { opacity: 1; filter: blur(0); transform: translateY(0); }
+      }
+    }
+  }
+
+  .entry__link {
+    transition: padding-inline var(--dur-std) var(--ease-out-expo), background-color var(--dur-std) var(--ease-out-expo);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .entry__link:hover {
+      padding-inline: var(--space-s);
+      background: rgba(246, 207, 69, 0.18);
+    }
+  }
 
   .act-doing { position: relative; overflow: hidden; }
   .act-doing::after {
@@ -574,7 +665,6 @@
   }
   .act-join > * { position: relative; }
   .act-join__mega { max-width: 10ch; line-height: 1.05; }
-  .act-join__body { color: rgba(21, 21, 21, 0.7); }
   .join-card {
     border: 1px solid rgba(21, 21, 21, 0.7);
     background: rgba(244, 240, 232, 0.92);
