@@ -396,32 +396,44 @@
   .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); }
   .doc-main { min-width: 0; }
   .doc-meta { display: flex; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
-  .doc-title { margin-top: var(--space-s); font-size: var(--text-h2); font-weight: 900; line-height: 1.35; }
-  .doc-summary { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.9; }
-  .doc-body { margin-top: var(--space-xl); display: grid; gap: var(--space-m); max-width: 68ch; }
-  .doc-body h2 { font-size: var(--text-h3); font-weight: 700; margin-top: var(--space-m); }
-  .doc-body p { line-height: 2; }
-  .doc-body ul { padding-left: 1.4em; display: grid; gap: var(--space-2xs); line-height: 1.9; }
+  .doc-title { margin-top: var(--space-s); font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.5rem); font-weight: 900; line-height: 1.2; }
+  .doc-summary { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.75; }
+  /* 正文节奏：小 gap 保持段间紧凑，heading 上方拉开形成分节呼吸 */
+  .doc-body { margin-top: var(--space-l); display: grid; gap: 0.625rem; max-width: 68ch; }
+  .doc-body > h2:first-child, .doc-body > h3:first-child { margin-top: 0; }
+  .doc-body h2 { font-size: var(--text-h3); font-weight: 700; margin-top: var(--space-l); margin-bottom: 0.25rem; }
+  .doc-body h3 { font-size: 1.1875rem; font-weight: 700; margin-top: var(--space-m); margin-bottom: 0.125rem; }
+  .doc-body h4 { font-weight: 700; margin-top: var(--space-s); }
+  .doc-body p { line-height: 1.75; }
+  .doc-body ul, .doc-body ol { padding-left: 1.4em; display: grid; gap: 0.25rem; line-height: 1.75; }
   .doc-note {
-    border-left: 3px solid var(--highlight);
-    background: color-mix(in oklab, var(--highlight) 18%, transparent);
+    border: 1px solid var(--border);
+    background: color-mix(in oklab, var(--highlight) 14%, var(--paper-0));
+    border-radius: var(--radius-sm);
     padding: var(--space-s) var(--space-m);
-    line-height: 1.9;
+    line-height: 1.75;
+    font-size: 0.9375em;
   }
   .doc-quote {
-    font-size: var(--text-h3);
-    font-weight: 700;
-    line-height: 1.6;
-    border-left: 3px solid var(--accent);
-    padding-left: var(--space-m);
+    border-left: 1px solid var(--border-strong);
+    padding-left: var(--space-s);
+    font-size: 0.9375em;
+    color: var(--text-muted);
+    line-height: 1.75;
   }
+  .doc-quote p + p { margin-top: 0.375rem; }
   /* markdown 渲染新增元素（图文教程）— 全部走 semantic token */
-  .doc-body img { height: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-  .doc-body ol { padding-left: 1.4em; display: grid; gap: var(--space-2xs); line-height: 1.9; }
+  .doc-body img { margin-block: var(--space-xs); height: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
   .doc-body code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-sunk); padding: 0.1em 0.4em; border-radius: var(--radius-sm); }
-  .doc-body pre { overflow-x: auto; max-width: 100%; }
+  .doc-body pre {
+    overflow-x: auto; max-width: 100%;
+    background: var(--bg-sunk); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: var(--space-s) var(--space-m); font-size: 0.875em; line-height: 1.7;
+  }
+  .doc-body pre code { background: transparent; padding: 0; font-size: 1em; }
+  .doc-body hr { border: 0; border-top: 1px solid var(--border); margin-block: var(--space-m); }
   .doc-body table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); }
-  .doc-body th, .doc-body td { border: 1px solid var(--border); padding: var(--space-2xs) var(--space-s); text-align: left; line-height: 1.7; }
+  .doc-body th, .doc-body td { border: 1px solid var(--border); padding: 0.4em 0.75em; text-align: left; line-height: 1.6; }
   .doc-body th { background: var(--bg-sunk); font-weight: 700; }
   .doc-body strong { font-weight: 700; }
   .doc-adjacent { margin-top: var(--space-xl); display: flex; justify-content: space-between; gap: var(--space-s); border-top: 1px solid var(--border); padding-top: var(--space-m); }
