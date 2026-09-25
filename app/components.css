@@ -114,14 +114,17 @@
 
   /* ---------- act 公共 ---------- */
   .act-what, .act-join { padding-block: var(--section-normal); }
-  .act-what .promptline, .act-join .promptline { font-size: var(--text-sm); color: var(--text-muted); }
+  .act-join .promptline { font-size: var(--text-sm); color: var(--text-muted); }
 
   /* ---------- act 1 · 是什么 ---------- */
   .act-what { isolation: isolate; overflow-x: clip; }
-  /* 巨大墨字 + 水彩色带横穿：字母实色完整可辨（墨 + ember 点缀），5 条硬边
-     半透明水彩色带压在字前、比字大并延伸出字外，微 blur 柔边；overflow-x clip
-     兜底任何横移不越视口（纵向 visible，色带出字上下不裁）。
-     静态即构图终态（rm / 无 supports 可读），无 from 态依赖 */
+  /* 巨大墨字压水彩晕染打底：字后 2 大块 + 字前 1 角块有机水彩（多层
+     radial-gradient + blur + multiply 交叠变深，真水彩的沉淀感），元素
+     opacity 恒 1、浓度由渐变 alpha 控制（低于 probe trapped 判定线的坑
+     不再可能）；块体布局位置横向不越容器，出界感走 transform（不进
+     scrollWidth），overflow-x clip 兜底。静态即构图终态，无 from 态依赖。
+     注：hero 纹理图在米纸亮底上 multiply 会糊成灰（实测截图教训），
+     水彩感全部由 wash 色块自身承担，不上纹理层 */
   .act-what__mega {
     position: relative;
     margin-top: var(--space-s);
@@ -134,56 +137,56 @@
   }
   .mega__word { position: relative; z-index: 1; color: var(--ink-0); }
   .mega__word .mega-accent { color: var(--ember-0); }
-  /* 色带基础：不规则圆角长条 + 各异角度，压字前（z 2 > 字 z 1）；
-     opacity ≥ 0.55（高于 probe trapped 判定线 0.5）；高度用 em 随字号缩放 */
-  .mega-band {
+  /* 水彩晕染块：大尺度不规则有机形 + 各异角度，浓度全靠渐变 alpha
+     （元素 opacity 恒 1，规避 probe trapped 判定）；blur 收小让色块
+     形态可辨，multiply 让交叠处自然变深 */
+  .mega-wash {
     position: absolute;
-    z-index: 2;
     display: block;
-    opacity: var(--b-o, 0.6);
-    filter: blur(var(--b-blur, 5px));
-    transform: rotate(var(--b-rot, 0deg));
+    filter: blur(var(--w-blur, 15px));
+    transform: rotate(var(--w-rot, 0deg));
     pointer-events: none;
   }
-  /* 橙带 · 上部 */
-  .mega-band--1 {
-    --b-rot: -4deg; --b-o: 0.62; --b-blur: 6px;
-    left: -4%; top: 13%; width: 108%; height: 0.16em;
-    background: linear-gradient(94deg, rgba(240, 90, 40, 0.2), rgba(240, 90, 40, 0.9) 22%, rgba(240, 90, 40, 0.75) 70%, rgba(240, 90, 40, 0.35));
-    border-radius: 54% 46% 62% 38% / 71% 42% 58% 29%;
+  /* ember 大晕染 · 字后左上（z 0，字后打底） */
+  .mega-wash--1 {
+    --w-rot: -8deg; --w-blur: 16px;
+    z-index: 0;
+    left: 2%; top: -12%; width: 62%; height: 76%;
+    background:
+      radial-gradient(58% 46% at 38% 42%, rgba(240, 90, 40, 0.55), transparent 66%),
+      radial-gradient(44% 52% at 68% 28%, rgba(240, 90, 40, 0.32), transparent 72%),
+      radial-gradient(32% 36% at 46% 72%, rgba(246, 207, 69, 0.4), transparent 68%);
+    border-radius: 62% 38% 55% 45% / 48% 62% 38% 52%;
   }
-  /* 黄带 · 中上 */
-  .mega-band--2 {
-    --b-rot: 2.5deg; --b-o: 0.68; --b-blur: 5px;
-    left: -6%; top: 36%; width: 112%; height: 0.2em;
-    background: linear-gradient(88deg, rgba(246, 207, 69, 0.85), rgba(246, 207, 69, 0.5) 45%, rgba(246, 207, 69, 0.9) 82%, rgba(246, 207, 69, 0.3));
-    border-radius: 38% 62% 44% 56% / 55% 38% 62% 45%;
+  /* 青 + 黄混晕染 · 字后右下（z 0，与 --1 对角呼应） */
+  .mega-wash--2 {
+    --w-rot: 6deg; --w-blur: 15px;
+    z-index: 0;
+    right: 2%; bottom: -10%; width: 56%; height: 68%;
+    background:
+      radial-gradient(52% 48% at 60% 56%, rgba(58, 110, 134, 0.46), transparent 68%),
+      radial-gradient(40% 40% at 28% 32%, rgba(246, 207, 69, 0.42), transparent 66%),
+      radial-gradient(28% 30% at 74% 24%, rgba(58, 110, 134, 0.22), transparent 72%);
+    border-radius: 41% 59% 48% 52% / 58% 41% 59% 42%;
   }
-  /* 青带 · 中下细条 */
-  .mega-band--3 {
-    --b-rot: -1.5deg; --b-o: 0.56; --b-blur: 6px;
-    left: -3%; top: 62%; width: 105%; height: 0.11em;
-    background: linear-gradient(91deg, rgba(58, 110, 134, 0.25), rgba(58, 110, 134, 0.8) 30%, rgba(58, 110, 134, 0.55) 75%, rgba(58, 110, 134, 0.2));
-    border-radius: 60% 40% 52% 48% / 64% 48% 52% 36%;
-  }
-  /* 橙黄混带 · 下部 */
-  .mega-band--4 {
-    --b-rot: 4.5deg; --b-o: 0.6; --b-blur: 7px;
-    left: -5%; top: 78%; width: 110%; height: 0.17em;
-    background: linear-gradient(96deg, rgba(240, 90, 40, 0.7), rgba(246, 207, 69, 0.6) 40%, rgba(240, 90, 40, 0.8) 78%, rgba(240, 90, 40, 0.25));
-    border-radius: 45% 55% 40% 60% / 50% 62% 38% 50%;
-  }
-  /* 墨细带 · 硬边割裂线（blur 最小，最锐） */
-  .mega-band--5 {
-    --b-rot: -6deg; --b-o: 0.7; --b-blur: 3px;
-    left: -2%; top: 50%; width: 104%; height: 0.07em;
-    background: linear-gradient(90deg, rgba(21, 21, 21, 0.1), rgba(21, 21, 21, 0.75) 26%, rgba(21, 21, 21, 0.55) 68%, rgba(21, 21, 21, 0.12));
-    border-radius: 999px;
+  /* ember 角晕 · 字前右上轻压一笔（z 2 压字，alpha 压低保 AI4U 清晰可辨） */
+  .mega-wash--3 {
+    --w-rot: 14deg; --w-blur: 12px;
+    z-index: 2;
+    right: 6%; top: -6%; width: 28%; height: 40%;
+    background:
+      radial-gradient(56% 50% at 46% 44%, rgba(240, 90, 40, 0.3), transparent 70%),
+      radial-gradient(36% 38% at 66% 62%, rgba(246, 207, 69, 0.22), transparent 68%);
+    border-radius: 55% 45% 62% 38% / 44% 56% 44% 56%;
   }
 
   /* 短语跑马灯：破 gutter 通铺的墨带，两组相同短语无缝循环。
-     reduce / JS 禁用：轨道静止，第一组完整可读（无 from 态依赖） */
+     弧形排布：词沿正弦波起伏（8 词一整波 → 组间循环无缝）+ 切向微转，
+     幅度用 em 随字号缩放；z 序压过 mega 晕染（wash--2 纵向下探不叠上墨带）。
+     reduce / JS 禁用：轨道静止，第一组完整可读（波浪形态保留，无 from 态依赖） */
   .marquee {
+    position: relative;
+    z-index: 1;
     margin-top: var(--space-xl);
     margin-inline: calc(-1 * clamp(1.25rem, 5vw, 6rem));
     overflow: hidden;
@@ -197,7 +200,8 @@
     gap: var(--space-l);
     list-style: none;
     margin: 0;
-    padding: var(--space-m) var(--space-l) var(--space-m) 0;
+    /* 上下各加一整个波幅的余量，弧形起伏不被 overflow hidden 裁掉 */
+    padding: calc(var(--space-m) + 0.8em) var(--space-l) calc(var(--space-m) + 0.8em) 0;
   }
   .marquee__item {
     display: flex;
@@ -207,7 +211,17 @@
     font-weight: 900;
     letter-spacing: 0.02em;
     white-space: nowrap;
+    transform: translateY(var(--my, 0)) rotate(var(--mr, 0deg));
   }
+  /* 正弦波 8 相位：一个完整周期跨 8 词（my = -sin·0.6em，mr = 切向 ±3deg） */
+  .marquee__item:nth-child(8n + 1) { --my: 0; --mr: -3deg; }
+  .marquee__item:nth-child(8n + 2) { --my: -0.42em; --mr: -2.1deg; }
+  .marquee__item:nth-child(8n + 3) { --my: -0.6em; --mr: 0deg; }
+  .marquee__item:nth-child(8n + 4) { --my: -0.42em; --mr: 2.1deg; }
+  .marquee__item:nth-child(8n + 5) { --my: 0; --mr: 3deg; }
+  .marquee__item:nth-child(8n + 6) { --my: 0.42em; --mr: 2.1deg; }
+  .marquee__item:nth-child(8n + 7) { --my: 0.6em; --mr: 0deg; }
+  .marquee__item:nth-child(8n + 8) { --my: 0.42em; --mr: -2.1deg; }
   .marquee__x { color: var(--accent); font-size: var(--text-sm); }
   @media (prefers-reduced-motion: no-preference) {
     .marquee__track { animation: marquee-move 16s linear infinite; }
@@ -545,9 +559,10 @@
   .hero__title { margin-top: var(--space-m); max-width: 10ch; color: var(--paper-0); }
   .hero__hint { color: rgba(242, 239, 232, 0.6); }
 
-  /* act-what 大字入场 + 色带视差横移：均 view() scrub，from 态只在 keyframes；
-     色带 keyframes 带同角度 rotate（与静态 rotate(var(--b-rot)) 终态一致），
-     各带异速异向，滚动往返时字被不同颜色反复穿过 */
+  /* act-what 大字入场 + 水彩晕染洇动：均 view() scrub，from 态只在 keyframes；
+     晕染 keyframes 带基准角度（calc(var(--w-rot) ± n)），与静态终态一致；
+     各块异速异向缓漂 + 微转（水彩在纸上洇开的节奏），横向出界走
+     translateX（不进 scrollWidth），overflow-x clip 兜底 */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .act-what__mega {
@@ -559,16 +574,21 @@
         from { opacity: 0.12; filter: blur(16px); transform: translateY(0.18em); }
         to { opacity: 1; filter: blur(0); transform: translateY(0); }
       }
-      .mega-band--1 { animation: band-1 linear both; animation-timeline: view(); animation-range: cover 8% cover 58%; }
-      .mega-band--2 { animation: band-2 linear both; animation-timeline: view(); animation-range: cover 14% cover 64%; }
-      .mega-band--3 { animation: band-3 linear both; animation-timeline: view(); animation-range: cover 20% cover 70%; }
-      .mega-band--4 { animation: band-4 linear both; animation-timeline: view(); animation-range: cover 10% cover 60%; }
-      .mega-band--5 { animation: band-5 linear both; animation-timeline: view(); animation-range: cover 16% cover 66%; }
-      @keyframes band-1 { from { transform: translateX(-7%) rotate(var(--b-rot)); } to { transform: translateX(7%) rotate(var(--b-rot)); } }
-      @keyframes band-2 { from { transform: translateX(8%) rotate(var(--b-rot)); } to { transform: translateX(-8%) rotate(var(--b-rot)); } }
-      @keyframes band-3 { from { transform: translateX(-9%) rotate(var(--b-rot)); } to { transform: translateX(9%) rotate(var(--b-rot)); } }
-      @keyframes band-4 { from { transform: translateX(6%) rotate(var(--b-rot)); } to { transform: translateX(-6%) rotate(var(--b-rot)); } }
-      @keyframes band-5 { from { transform: translateX(-11%) rotate(var(--b-rot)); } to { transform: translateX(11%) rotate(var(--b-rot)); } }
+      .mega-wash--1 { animation: wash-1 linear both; animation-timeline: view(); animation-range: cover 8% cover 58%; }
+      .mega-wash--2 { animation: wash-2 linear both; animation-timeline: view(); animation-range: cover 14% cover 64%; }
+      .mega-wash--3 { animation: wash-3 linear both; animation-timeline: view(); animation-range: cover 10% cover 60%; }
+      @keyframes wash-1 {
+        from { transform: translate(-4%, 3%) rotate(calc(var(--w-rot) - 3deg)); }
+        to { transform: translate(4%, -3%) rotate(calc(var(--w-rot) + 2deg)); }
+      }
+      @keyframes wash-2 {
+        from { transform: translate(4%, -3%) rotate(calc(var(--w-rot) + 3deg)); }
+        to { transform: translate(-4%, 3%) rotate(calc(var(--w-rot) - 2deg)); }
+      }
+      @keyframes wash-3 {
+        from { transform: translate(4%, 4%) rotate(calc(var(--w-rot) + 4deg)); }
+        to { transform: translate(-3%, -2%) rotate(calc(var(--w-rot) - 3deg)); }
+      }
     }
   }
 
