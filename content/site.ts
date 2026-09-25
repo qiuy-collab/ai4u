@@ -26,14 +26,6 @@ export const HERO = {
 export const ACT_WHAT = {
   prompt: "AI4U 是什么？",
   mega: "AI4U",
-  // 拱形画廊：取自 /docs 教程的官方配图（public/images/docs/whats-agent/，已本地化）
-  gallery: [
-    { src: "/images/docs/whats-agent/pattern-enhanced-llm.png", alt: "增强 LLM 工作流示意" },
-    { src: "/images/docs/whats-agent/pattern-agent-loop.png", alt: "Agent 循环示意" },
-    { src: "/images/docs/whats-agent/skill-folder.jpg", alt: "Skill 目录结构" },
-    { src: "/images/docs/whats-agent/skill-progressive.jpg", alt: "Skill 渐进式披露" },
-    { src: "/images/docs/whats-agent/skill-trigger.jpg", alt: "Skill 触发机制" },
-  ],
   // Agent 名词跑马灯（解释性短语不上首页）
   terms: ["Agent", "Context", "Prompt", "Skill", "Codex", "Claude Code", "MCP", "Tool Use"],
 } as const;

@@ -7,9 +7,6 @@ const isGitHubPages = process.env.GITHUB_PAGES === "true";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // 组件层站内静态资源前缀：Pages 模式下 <img src> 需手动带 basePath
-  // （CSS url 由构建器处理，md 渲染层由 applyBasePath 处理，组件层走这里）
-  env: { NEXT_PUBLIC_ASSET_PREFIX: isGitHubPages ? "/ai4u" : "" },
   ...(isGitHubPages
     ? {
         output: "export" as const,
