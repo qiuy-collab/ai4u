@@ -11,60 +11,43 @@ export const SITE = {
   },
 } as const;
 
+/* 右上角导航 — 只留两个入口（首页主体另有 here/文档/join us 三入口，见 ACT_START） */
+export const NAV = [
+  { label: "文档", href: "/docs" },
+  { label: "join us", href: "/#join" },
+] as const;
+
 export const HERO = {
   prompt: "想用 AI 做点什么？",
   titleLines: ["把 AI 用成日常", "工具归你"],
-  sub: "不用先懂什么，想问的直接问，卡住了有人搭手。",
-  scrollHint: "往下看",
+  scrollHint: "scroll ↓",
 } as const;
 
 export const ACT_WHAT = {
   prompt: "AI4U 是什么？",
   highlight: "AI for You。",
-  body: [
-    "一群把 AI 用起来的人，凑在一起。",
-    "这里没有老师和学生，都是边用边摸索的。谁先踩通了哪条路，就把经验摊开给大家。",
-    "刚装好第一个软件的，和用了一两年的，都在一个群里。",
-  ],
-  nos: [
-    { k: "不卖课", v: "内容全免费" },
-    { k: "不设门槛", v: "零基础更好" },
-    { k: "不端着", v: "都说人话" },
-  ],
+  // 短语标签：跑马灯内容（解释性正文一律不上首页）
+  nos: [{ k: "不卖课" }, { k: "不设门槛" }, { k: "不端着" }],
 } as const;
 
 export const ACT_DOING = {
   prompt: "最近在做什么？",
-  intro: "就三件事，都还在做。",
-  timeline: [
-    {
-      date: "", // 空值不渲染日期行
-      title: "工具试用",
-      desc: "每隔一阵选一个工具，扔进真实任务里跑。好不好用，用过的才算数。",
-    },
-    {
-      date: "",
-      title: "经验记录",
-      desc: "踩过的坑、摸到的门道，写成短文放进内容页，谁都能翻。",
-    },
-    {
-      date: "",
-      title: "线下见面",
-      desc: "找个地方，带着电脑见面聊，顺手做出点小东西。",
-    },
-  ],
+  timeline: [{ title: "工具试用" }, { title: "经验记录" }, { title: "线下见面" }],
 } as const;
 
 export const ACT_START = {
   prompt: "从哪里开始？",
-  answer: "不用先定学习计划。挑一篇顺眼的读完，马上动手试——要试的东西越小越好。",
-  cta: "看全部内容",
+  // 首页主体三入口（用户约定：here / 文档 / join us）
+  entries: [
+    { label: "here", href: "/docs/whats-agent" },
+    { label: "文档", href: "/docs" },
+    { label: "join us", href: "/#join" },
+  ],
 } as const;
 
 export const ACT_JOIN = {
   prompt: "怎么加入？",
   mega: "空着手|来就行",
-  body: "问题不分大小，群里直接问，没人笑话入门的。",
   copyLabel: "复制群号",
   copiedLabel: "已复制",
 } as const;

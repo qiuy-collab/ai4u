@@ -3,8 +3,9 @@ import Highlight from "@/components/ui/Highlight";
 import { ACT_WHAT } from "@/content/site";
 
 /**
- * Act 1 · 是什么 — 1 栏窄行宽 statement + 荧光笔宣言。
- * 三个「不」做成编号行式 editorial 列表，不是三张等宽卡（design-slop A2）。
+ * Act 1 · 是什么 — 一句大字 + 一条短语跑马灯，正文解释全不上首页。
+ * 跑马灯：两组相同短语无缝循环（第二组 aria-hidden 只为循环续接）；
+ * reduced-motion 下轨道静止，第一组完整可读。
  */
 export default function ActWhat() {
   return (
@@ -14,20 +15,24 @@ export default function ActWhat() {
       <p className="act-what__statement">
         <Highlight>{ACT_WHAT.highlight}</Highlight>
       </p>
-      {ACT_WHAT.body.map((t) => (
-        <p key={t.slice(0, 12)} className="act-what__body measure">{t}</p>
-      ))}
-      <ul className="act-what__nos">
-        {ACT_WHAT.nos.map((n, i) => (
-          <li key={n.k} className="act-what__no">
-            <span className="act-what__no-index mono" aria-hidden="true">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span className="act-what__no-key">{n.k}</span>
-            <span className="act-what__no-val">{n.v}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="marquee" role="group" aria-label="AI4U 的三个约定">
+        <div className="marquee__track">
+          {[0, 1].map((g) => (
+            <ul
+              className="marquee__group"
+              key={g}
+              aria-hidden={g === 1 || undefined}
+            >
+              {ACT_WHAT.nos.map((n) => (
+                <li key={n.k} className="marquee__item">
+                  <span className="marquee__x mono" aria-hidden="true">✕</span>
+                  {n.k}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

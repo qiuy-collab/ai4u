@@ -35,7 +35,6 @@ export default function Hero() {
           </span>
         ))}
       </h1>
-      <p className="hero__sub measure-narrow">{HERO.sub}</p>
       <p className="hero__hint mono" aria-hidden="true">{HERO.scrollHint}</p>
     </section>
   );

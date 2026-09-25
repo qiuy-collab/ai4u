@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { FOOTER } from "@/content/site";
+import { NAV } from "@/content/site";
 
 /**
  * 全站导航 — creative 方言：fixed、64px、无 CTA 按钮。
- * mix-blend-mode: difference：纸白幕上是墨字，墨色幕上自动反成纸字，
- * 不需要 scroll-driven 主题交换（components.md §3 方案 a）。
+ * 右上角只留两个入口：文档 / join us（用户约定）。
  */
 export default function SiteNav() {
   return (
@@ -15,7 +14,7 @@ export default function SiteNav() {
       </Link>
       <nav aria-label="主导航">
         <ul className="site-nav__links">
-          {FOOTER.nav.map((item) => (
+          {NAV.map((item) => (
             <li key={item.href}>
               <Link href={item.href} className="site-nav__link">
                 <span className="site-nav__enter" aria-hidden="true">↵ </span>

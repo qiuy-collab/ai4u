@@ -17,7 +17,6 @@ export default function ActJoin() {
         {lead}
         <Highlight>{lit}</Highlight>
       </p>
-      <p className="act-join__body measure-narrow">{ACT_JOIN.body}</p>
       <JoinCard />
     </section>
   );
