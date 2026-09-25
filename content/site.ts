@@ -40,7 +40,7 @@ export const ACT_WHAT = {
 
 export const ACT_JOIN = {
   prompt: "怎么加入？",
-  mega: "空着手|来就行",
+  mega: "Join|us",
   copyLabel: "复制群号",
   copiedLabel: "已复制",
 } as const;
