@@ -117,12 +117,89 @@
   .act-what .promptline, .act-join .promptline { font-size: var(--text-sm); color: var(--text-muted); }
 
   /* ---------- act 1 · 是什么 ---------- */
-  .act-what__statement {
-    margin-top: var(--space-l);
-    font-size: var(--text-h2);
+  .act-what { isolation: isolate; }
+  /* 巨大水彩字：水彩纹理（app/ 内相对引用，构建器自动加 basePath）
+     + 三层色斑 clip 进字身；字身默认完整可见，无 from 态依赖 */
+  .act-what__mega {
+    position: relative;
+    margin-top: var(--space-s);
+    text-align: center;
     font-weight: 900;
-    line-height: 1.4;
-    max-width: 22ch;
+    font-size: clamp(4rem, 3.2rem + 21vw, 23rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    user-select: none;
+    background:
+      radial-gradient(38% 55% at 26% 32%, rgba(240, 90, 40, 0.88), transparent 72%),
+      radial-gradient(46% 52% at 76% 38%, rgba(246, 207, 69, 0.62), transparent 74%),
+      radial-gradient(55% 65% at 52% 80%, rgba(21, 21, 21, 0.55), transparent 80%),
+      url("./ai4u-hero-texture.png") center / cover;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* 字后水彩晕染层：低透明度大色斑，慢速漂移（reduce 全局兜底静止，仍在位）。
+     横向不外扩（inset 左右为 0）：外扩会在 rm 下停出视口造成横向溢出；blur 是 paint 层不进 scrollWidth */
+  .act-what__mega::before {
+    content: "";
+    position: absolute;
+    inset: -14% 0;
+    z-index: -1;
+    background:
+      radial-gradient(30% 45% at 30% 40%, rgba(240, 90, 40, 0.32), transparent 70%),
+      radial-gradient(34% 42% at 70% 55%, rgba(246, 207, 69, 0.28), transparent 72%);
+    filter: blur(38px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .act-what__mega::before { animation: mega-bleed 12s ease-in-out infinite alternate; }
+    @keyframes mega-bleed {
+      from { transform: translate3d(-2%, -1.5%, 0) scale(1); }
+      to { transform: translate3d(2.5%, 2%, 0) scale(1.06); }
+    }
+  }
+
+  /* 拱形画廊：破 gutter 通铺横轨（窄屏容器内滑动），拱顶相框 + 错落旋转 */
+  .arches {
+    margin-top: var(--space-l);
+    margin-inline: calc(-1 * clamp(1.25rem, 5vw, 6rem));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .arches::-webkit-scrollbar { display: none; }
+  .arches__track {
+    display: flex;
+    gap: var(--space-m);
+    width: max-content;
+    list-style: none;
+    padding: var(--space-s) clamp(1.25rem, 5vw, 6rem);
+  }
+  /* 错落态用变量承载：静态 transform 与 view() 动画终态共用同一组值 */
+  .arches__item {
+    --tilt: 0deg;
+    --rest: 0rem;
+    transform: translateY(var(--rest)) rotate(var(--tilt));
+  }
+  .arches__item:nth-child(odd) { --tilt: -1.4deg; --rest: 0.9rem; }
+  .arches__item:nth-child(even) { --tilt: 1.2deg; --rest: -0.2rem; }
+  .arches__frame {
+    width: clamp(9rem, 16vw, 14rem);
+    aspect-ratio: 3 / 4.1;
+    padding: 7px;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px 999px var(--radius-sm) var(--radius-sm);
+    background: var(--paper-1);
+  }
+  .arches__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 998px 998px 1px 1px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .arches__img { transition: transform var(--dur-std) var(--ease-out-expo); }
+    .arches__item:hover .arches__img { transform: scale(1.05); }
   }
   /* 短语跑马灯：破 gutter 通铺的墨带，两组相同短语无缝循环。
      reduce / JS 禁用：轨道静止，第一组完整可读（无 from 态依赖） */
@@ -434,6 +511,7 @@
   @media (max-width: 780px) {
     .marquee__group { gap: var(--space-m); padding: var(--space-s) var(--space-m) var(--space-s) 0; }
     .marquee__item { gap: var(--space-m); font-size: 1.25rem; }
+    .arches__frame { width: 8.25rem; }
     .index-row__link { grid-template-columns: 1.6rem 1fr auto; }
     .index-row__cat { display: none; }
     .join-card { grid-template-columns: 1fr; }
@@ -473,7 +551,7 @@
     position: absolute;
     inset: 0;
     z-index: -2;
-    background: url("/ai4u-hero-texture.png") center / cover no-repeat;
+    background: url("./ai4u-hero-texture.png") center / cover no-repeat;
     opacity: 0.25;
     mix-blend-mode: screen;
   }
@@ -488,18 +566,27 @@
   .hero__title { margin-top: var(--space-m); max-width: 10ch; color: var(--paper-0); }
   .hero__hint { color: rgba(242, 239, 232, 0.6); }
 
-  .act-what__statement { line-height: 1.22; max-width: 18ch; }
-  /* 大字入场：blur + 上浮 scrub（view()），from 态只在 keyframes */
+  /* act-what 大字与拱形画廊：blur + 上浮 scrub（view()），from 态只在 keyframes；
+     动画终态与静态 transform 共用 --tilt/--rest，@supports 不满足时回退静态错落 */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      .act-what__statement {
-        animation: statement-in linear both;
+      .act-what__mega {
+        animation: what-in linear both;
         animation-timeline: view();
-        animation-range: entry 10% cover 35%;
+        animation-range: entry 5% cover 32%;
       }
-      @keyframes statement-in {
-        from { opacity: 0.15; filter: blur(14px); transform: translateY(0.2em); }
+      @keyframes what-in {
+        from { opacity: 0.12; filter: blur(16px); transform: translateY(0.18em); }
         to { opacity: 1; filter: blur(0); transform: translateY(0); }
+      }
+      .arches__item {
+        animation: arch-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 36%;
+      }
+      @keyframes arch-in {
+        from { opacity: 0.08; transform: translateY(2.6rem) rotate(var(--tilt)) scale(0.97); }
+        to { opacity: 1; transform: translateY(var(--rest)) rotate(var(--tilt)); }
       }
     }
   }
@@ -513,7 +600,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: url("/ai4u-hero-texture.png") center / cover;
+    background: url("./ai4u-hero-texture.png") center / cover;
     opacity: 0.13;
     mix-blend-mode: multiply;
     pointer-events: none;
