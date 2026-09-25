@@ -117,9 +117,11 @@
   .act-what .promptline, .act-join .promptline { font-size: var(--text-sm); color: var(--text-muted); }
 
   /* ---------- act 1 · 是什么 ---------- */
-  .act-what { isolation: isolate; }
-  /* 巨大水彩字：水彩纹理（app/ 内相对引用，构建器自动加 basePath）
-     + 三层色斑 clip 进字身；字身默认完整可见，无 from 态依赖 */
+  .act-what { isolation: isolate; overflow-x: clip; }
+  /* 巨大墨字 + 水彩色带横穿：字母实色完整可辨（墨 + ember 点缀），5 条硬边
+     半透明水彩色带压在字前、比字大并延伸出字外，微 blur 柔边；overflow-x clip
+     兜底任何横移不越视口（纵向 visible，色带出字上下不裁）。
+     静态即构图终态（rm / 无 supports 可读），无 from 态依赖 */
   .act-what__mega {
     position: relative;
     margin-top: var(--space-s);
@@ -129,78 +131,56 @@
     line-height: 1.02;
     letter-spacing: -0.04em;
     user-select: none;
-    background:
-      radial-gradient(38% 55% at 26% 32%, rgba(240, 90, 40, 0.88), transparent 72%),
-      radial-gradient(46% 52% at 76% 38%, rgba(246, 207, 69, 0.62), transparent 74%),
-      radial-gradient(55% 65% at 52% 80%, rgba(21, 21, 21, 0.55), transparent 80%),
-      url("./ai4u-hero-texture.png") center / cover;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
   }
-  /* 字后水彩晕染层：低透明度大色斑，慢速漂移（reduce 全局兜底静止，仍在位）。
-     横向不外扩（inset 左右为 0）：外扩会在 rm 下停出视口造成横向溢出；blur 是 paint 层不进 scrollWidth */
-  .act-what__mega::before {
-    content: "";
+  .mega__word { position: relative; z-index: 1; color: var(--ink-0); }
+  .mega__word .mega-accent { color: var(--ember-0); }
+  /* 色带基础：不规则圆角长条 + 各异角度，压字前（z 2 > 字 z 1）；
+     opacity ≥ 0.55（高于 probe trapped 判定线 0.5）；高度用 em 随字号缩放 */
+  .mega-band {
     position: absolute;
-    inset: -14% 0;
-    z-index: -1;
-    background:
-      radial-gradient(30% 45% at 30% 40%, rgba(240, 90, 40, 0.32), transparent 70%),
-      radial-gradient(34% 42% at 70% 55%, rgba(246, 207, 69, 0.28), transparent 72%);
-    filter: blur(38px);
+    z-index: 2;
+    display: block;
+    opacity: var(--b-o, 0.6);
+    filter: blur(var(--b-blur, 5px));
+    transform: rotate(var(--b-rot, 0deg));
+    pointer-events: none;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .act-what__mega::before { animation: mega-bleed 12s ease-in-out infinite alternate; }
-    @keyframes mega-bleed {
-      from { transform: translate3d(-2%, -1.5%, 0) scale(1); }
-      to { transform: translate3d(2.5%, 2%, 0) scale(1.06); }
-    }
+  /* 橙带 · 上部 */
+  .mega-band--1 {
+    --b-rot: -4deg; --b-o: 0.62; --b-blur: 6px;
+    left: -4%; top: 13%; width: 108%; height: 0.16em;
+    background: linear-gradient(94deg, rgba(240, 90, 40, 0.2), rgba(240, 90, 40, 0.9) 22%, rgba(240, 90, 40, 0.75) 70%, rgba(240, 90, 40, 0.35));
+    border-radius: 54% 46% 62% 38% / 71% 42% 58% 29%;
+  }
+  /* 黄带 · 中上 */
+  .mega-band--2 {
+    --b-rot: 2.5deg; --b-o: 0.68; --b-blur: 5px;
+    left: -6%; top: 36%; width: 112%; height: 0.2em;
+    background: linear-gradient(88deg, rgba(246, 207, 69, 0.85), rgba(246, 207, 69, 0.5) 45%, rgba(246, 207, 69, 0.9) 82%, rgba(246, 207, 69, 0.3));
+    border-radius: 38% 62% 44% 56% / 55% 38% 62% 45%;
+  }
+  /* 青带 · 中下细条 */
+  .mega-band--3 {
+    --b-rot: -1.5deg; --b-o: 0.56; --b-blur: 6px;
+    left: -3%; top: 62%; width: 105%; height: 0.11em;
+    background: linear-gradient(91deg, rgba(58, 110, 134, 0.25), rgba(58, 110, 134, 0.8) 30%, rgba(58, 110, 134, 0.55) 75%, rgba(58, 110, 134, 0.2));
+    border-radius: 60% 40% 52% 48% / 64% 48% 52% 36%;
+  }
+  /* 橙黄混带 · 下部 */
+  .mega-band--4 {
+    --b-rot: 4.5deg; --b-o: 0.6; --b-blur: 7px;
+    left: -5%; top: 78%; width: 110%; height: 0.17em;
+    background: linear-gradient(96deg, rgba(240, 90, 40, 0.7), rgba(246, 207, 69, 0.6) 40%, rgba(240, 90, 40, 0.8) 78%, rgba(240, 90, 40, 0.25));
+    border-radius: 45% 55% 40% 60% / 50% 62% 38% 50%;
+  }
+  /* 墨细带 · 硬边割裂线（blur 最小，最锐） */
+  .mega-band--5 {
+    --b-rot: -6deg; --b-o: 0.7; --b-blur: 3px;
+    left: -2%; top: 50%; width: 104%; height: 0.07em;
+    background: linear-gradient(90deg, rgba(21, 21, 21, 0.1), rgba(21, 21, 21, 0.75) 26%, rgba(21, 21, 21, 0.55) 68%, rgba(21, 21, 21, 0.12));
+    border-radius: 999px;
   }
 
-  /* 拱形画廊：破 gutter 通铺横轨（窄屏容器内滑动），拱顶相框 + 错落旋转 */
-  .arches {
-    margin-top: var(--space-l);
-    margin-inline: calc(-1 * clamp(1.25rem, 5vw, 6rem));
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-  }
-  .arches::-webkit-scrollbar { display: none; }
-  .arches__track {
-    display: flex;
-    gap: var(--space-m);
-    width: max-content;
-    list-style: none;
-    padding: var(--space-s) clamp(1.25rem, 5vw, 6rem);
-  }
-  /* 错落态用变量承载：静态 transform 与 view() 动画终态共用同一组值 */
-  .arches__item {
-    --tilt: 0deg;
-    --rest: 0rem;
-    transform: translateY(var(--rest)) rotate(var(--tilt));
-  }
-  .arches__item:nth-child(odd) { --tilt: -1.4deg; --rest: 0.9rem; }
-  .arches__item:nth-child(even) { --tilt: 1.2deg; --rest: -0.2rem; }
-  .arches__frame {
-    width: clamp(9rem, 16vw, 14rem);
-    aspect-ratio: 3 / 4.1;
-    padding: 7px;
-    overflow: hidden;
-    border: 1px solid var(--border-strong);
-    border-radius: 999px 999px var(--radius-sm) var(--radius-sm);
-    background: var(--paper-1);
-  }
-  .arches__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 998px 998px 1px 1px;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .arches__img { transition: transform var(--dur-std) var(--ease-out-expo); }
-    .arches__item:hover .arches__img { transform: scale(1.05); }
-  }
   /* 短语跑马灯：破 gutter 通铺的墨带，两组相同短语无缝循环。
      reduce / JS 禁用：轨道静止，第一组完整可读（无 from 态依赖） */
   .marquee {
@@ -511,7 +491,6 @@
   @media (max-width: 780px) {
     .marquee__group { gap: var(--space-m); padding: var(--space-s) var(--space-m) var(--space-s) 0; }
     .marquee__item { gap: var(--space-m); font-size: 1.25rem; }
-    .arches__frame { width: 8.25rem; }
     .index-row__link { grid-template-columns: 1.6rem 1fr auto; }
     .index-row__cat { display: none; }
     .join-card { grid-template-columns: 1fr; }
@@ -566,8 +545,9 @@
   .hero__title { margin-top: var(--space-m); max-width: 10ch; color: var(--paper-0); }
   .hero__hint { color: rgba(242, 239, 232, 0.6); }
 
-  /* act-what 大字与拱形画廊：blur + 上浮 scrub（view()），from 态只在 keyframes；
-     动画终态与静态 transform 共用 --tilt/--rest，@supports 不满足时回退静态错落 */
+  /* act-what 大字入场 + 色带视差横移：均 view() scrub，from 态只在 keyframes；
+     色带 keyframes 带同角度 rotate（与静态 rotate(var(--b-rot)) 终态一致），
+     各带异速异向，滚动往返时字被不同颜色反复穿过 */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .act-what__mega {
@@ -579,15 +559,16 @@
         from { opacity: 0.12; filter: blur(16px); transform: translateY(0.18em); }
         to { opacity: 1; filter: blur(0); transform: translateY(0); }
       }
-      .arches__item {
-        animation: arch-in linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 36%;
-      }
-      @keyframes arch-in {
-        from { opacity: 0.08; transform: translateY(2.6rem) rotate(var(--tilt)) scale(0.97); }
-        to { opacity: 1; transform: translateY(var(--rest)) rotate(var(--tilt)); }
-      }
+      .mega-band--1 { animation: band-1 linear both; animation-timeline: view(); animation-range: cover 8% cover 58%; }
+      .mega-band--2 { animation: band-2 linear both; animation-timeline: view(); animation-range: cover 14% cover 64%; }
+      .mega-band--3 { animation: band-3 linear both; animation-timeline: view(); animation-range: cover 20% cover 70%; }
+      .mega-band--4 { animation: band-4 linear both; animation-timeline: view(); animation-range: cover 10% cover 60%; }
+      .mega-band--5 { animation: band-5 linear both; animation-timeline: view(); animation-range: cover 16% cover 66%; }
+      @keyframes band-1 { from { transform: translateX(-7%) rotate(var(--b-rot)); } to { transform: translateX(7%) rotate(var(--b-rot)); } }
+      @keyframes band-2 { from { transform: translateX(8%) rotate(var(--b-rot)); } to { transform: translateX(-8%) rotate(var(--b-rot)); } }
+      @keyframes band-3 { from { transform: translateX(-9%) rotate(var(--b-rot)); } to { transform: translateX(9%) rotate(var(--b-rot)); } }
+      @keyframes band-4 { from { transform: translateX(6%) rotate(var(--b-rot)); } to { transform: translateX(-6%) rotate(var(--b-rot)); } }
+      @keyframes band-5 { from { transform: translateX(-11%) rotate(var(--b-rot)); } to { transform: translateX(11%) rotate(var(--b-rot)); } }
     }
   }
 
