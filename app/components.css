@@ -113,9 +113,8 @@
   }
 
   /* ---------- act 公共 ---------- */
-  .act-what, .act-start, .act-join { padding-block: var(--section-normal); }
-  .act-what .promptline, .act-start .promptline, .act-join .promptline,
-  .act-doing .promptline { font-size: var(--text-sm); color: var(--text-muted); }
+  .act-what, .act-join { padding-block: var(--section-normal); }
+  .act-what .promptline, .act-join .promptline { font-size: var(--text-sm); color: var(--text-muted); }
 
   /* ---------- act 1 · 是什么 ---------- */
   .act-what__statement {
@@ -158,125 +157,6 @@
     @keyframes marquee-move { to { transform: translateX(-50%); } }
   }
 
-  /* ---------- act 2 · 在忙什么（墨色幕） ---------- */
-  .act-doing {
-    background: var(--bg-night);
-    color: var(--text-on-night);
-    padding-block: var(--section-loose);
-  }
-  .act-doing .promptline { color: color-mix(in oklab, var(--night-1) 62%, transparent); }
-  .act-doing__timeline { position: relative; margin-top: var(--space-xl); }
-  .act-doing__line {
-    position: absolute;
-    left: clamp(1.25rem, 5vw, 6rem);
-    top: 0.4em;
-    bottom: 0.4em;
-    width: 2px;
-    background: var(--ember-0);
-    transform-origin: top;
-  }
-  .act-doing__items {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: var(--space-xl);
-  }
-  .act-doing__item {
-    padding-left: clamp(2.5rem, 6vw, 4rem);
-    position: relative;
-  }
-  .act-doing__node {
-    position: absolute;
-    left: 0; /* 相对 item 缩进盒的左缘 = 时间线所在位置 */
-    top: 0.5em;
-    translate: -45% 0;
-    width: 12px;
-    height: 12px;
-    background: var(--ember-0);
-    border-radius: 50%; /* 唯一允许的非 0 radius：节点是几何点不是 UI 面 */
-  }
-  /* 线生长 + 节点点亮 + 条目上浮：CSS view() timeline（rung 1.5）。
-     不支持 / reduced-motion：无动画规则生效，元素即完整终态 */
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .act-doing__line {
-        animation: line-grow linear both;
-        animation-timeline: view();
-        animation-range: entry 15% exit 55%;
-      }
-      @keyframes line-grow {
-        from { transform: scaleY(0.02); }
-        to { transform: scaleY(1); }
-      }
-      .act-doing__node {
-        animation: node-pop linear both;
-        animation-timeline: view();
-        animation-range: entry 40% cover 55%;
-      }
-      @keyframes node-pop {
-        from { opacity: 0.4; scale: 0.3; }
-        to { opacity: 1; scale: 1; }
-      }
-      .act-doing__item {
-        animation: doing-item-in linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 28%;
-      }
-      @keyframes doing-item-in {
-        from { opacity: 0.2; transform: translateY(24px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-    }
-  }
-  /* 幕内只剩三个大词，字号升格补视觉分量 */
-  .act-doing__title { margin-top: 0; font-size: var(--text-h2); font-weight: 900; letter-spacing: -0.02em; }
-
-  /* ---------- act 3 · 首页主体三入口（here / 文档 / join us） ---------- */
-  .act-start__entries {
-    margin-top: var(--space-l);
-    list-style: none;
-    padding: 0;
-    border-top: 1px solid var(--border);
-  }
-  .entry__link {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: var(--space-m);
-    align-items: baseline;
-    padding-block: var(--space-m);
-    text-decoration: none;
-    color: inherit;
-    min-height: 44px;
-  }
-  .entry__index { color: var(--accent); font-size: var(--text-sm); }
-  .entry__label {
-    font-size: clamp(1.75rem, 1.2rem + 2.8vw, 3.25rem);
-    font-weight: 900;
-    line-height: 1.15;
-  }
-  .entry__arrow {
-    color: var(--accent);
-    transform: translateX(0);
-    transition: transform var(--dur-fast) var(--ease-out-expo);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .entry__link:hover .entry__arrow,
-    .entry__link:focus-visible .entry__arrow { transform: translateX(6px); }
-  }
-  /* 入口逐行浮现：scroll-driven（rung 1.5），每行进入视口时自行播放。
-     from 态不落静态规则，Firefox / reduced-motion 退化为完整终态。仅首页 Act3。 */
-  @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: view()) {
-      .act-start__entries .entry {
-        animation: act-start-row 0.6s var(--ease-out-expo) both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 22%;
-      }
-    }
-    @keyframes act-start-row {
-      from { opacity: 0; transform: translateY(14px); }
-    }
-  }
   /* mono 小链接：ActStart 旧 CTA 样式，现由 404 页「回到首页」复用，勿删 */
   .act-start__more {
     display: inline-flex;
@@ -623,31 +503,6 @@
       }
     }
   }
-
-  .entry__link {
-    transition: padding-inline var(--dur-std) var(--ease-out-expo), background-color var(--dur-std) var(--ease-out-expo);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .entry__link:hover {
-      padding-inline: var(--space-s);
-      background: rgba(246, 207, 69, 0.18);
-    }
-  }
-
-  .act-doing { position: relative; overflow: hidden; }
-  .act-doing::after {
-    content: "";
-    position: absolute;
-    width: 22rem;
-    height: 22rem;
-    right: 8%;
-    top: 12%;
-    border: 1px solid rgba(242, 239, 232, 0.14);
-    border-radius: 50%;
-    box-shadow: 0 0 0 2rem rgba(242, 239, 232, 0.02), 0 0 0 4rem rgba(242, 239, 232, 0.02);
-    pointer-events: none;
-  }
-  .act-doing__node { box-shadow: 0 0 0 7px rgba(240, 90, 40, 0.15); }
 
   .index-row__link { transition: padding-inline var(--dur-std) var(--ease-out-expo), background-color var(--dur-std) var(--ease-out-expo); }
   .index-row__link:hover { padding-inline: var(--space-s); background: rgba(246, 207, 69, 0.18); }
