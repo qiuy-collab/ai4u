@@ -10,7 +10,7 @@ mkdirSync(OUT, { recursive: true });
 const PAGES = [
   { path: "/", name: "home", status: 200 },
   { path: "/docs", name: "docs", status: 200 },
-  { path: "/docs/first-chat", name: "doc", status: 200 },
+  { path: "/docs/whats-agent", name: "doc", status: 200 },
   { path: "/no-such-page", name: "404", status: 404 }, // 返回 404 才是正确行为
 ];
 

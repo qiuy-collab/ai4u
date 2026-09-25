@@ -16,7 +16,8 @@
   body { min-height: 100svh; line-height: 1.6; -webkit-font-smoothing: antialiased; }
   img, picture, video, canvas, svg { display: block; max-width: 100%; }
   input, button, textarea, select { font: inherit; color: inherit; }
-  p, h1, h2, h3, h4 { overflow-wrap: break-word; }
+  p, h1, h2, h3, h4, li, td, th { overflow-wrap: break-word; }
+  a { overflow-wrap: anywhere; }
   h1, h2, h3 { text-wrap: balance; }
   p { text-wrap: pretty; }
   :target { scroll-margin-block: 5svh; }
