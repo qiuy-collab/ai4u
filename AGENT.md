@@ -21,14 +21,38 @@ AI4U（AI for You）——学生自组织的 AI 交流社区官网。**面向大
 ## 目录
 
 ```
-content/site.ts    全站文案数据 + 待补事实（改文案先来这里）
-content/docs.ts    教程文档数据（slug / 分类 / 正文）
+content/site.ts        全站文案数据 + 待补事实（改文案先来这里）
+content/docs/*.md      教程文档源文件（frontmatter + markdown，见下方「新增教程」）
+content/docs.ts        md loader：构建时读取 content/docs/*.md 编译为 HTML（保持 DOCS/getDoc/getAdjacent 导出）
 app/               路由：layout / page(首页) / docs / docs/[slug] / not-found / opengraph-image
 app/globals.css    token 层 + @layer 顺序 + 动效 token
 components/ui/     可复用组件（nav / footer / JoinCard / PromptLine…）
 components/sections/  首页各幕（ActWhat / ActDoing / ActStart / ActJoin）
 scripts/probe.mjs  验收 probe：溢出 / reduced-motion 可见性 / h1 / lang 扫描
 ```
+
+## 新增教程（md 工作流）
+
+在 `content/docs/` 新建 `<slug>.md`（**文件名即 URL slug**，slug 已上线的文件不要改名）：
+
+```markdown
+---
+title: 标题
+category: tutorial   # tutorial | path | activity（categoryLabel 自动映射：教程/路径/活动）
+date: ""             # 未定稿保持空串，页面自动不渲染；定稿后写 YYYY-MM-DD
+minutes: 6
+summary: 一句话摘要
+order: 4             # 列表页与上/下一篇的排序号
+---
+
+正文 markdown（支持 GFM：列表/表格/删除线）。两个约定：
+- 提示块写 `> [!NOTE] xxx` → 渲染为高亮 aside；金句/引用直接 `> xxx` → 渲染为大字引用
+- 图片放 `public/images/docs/<slug>/`，md 里写 `/images/docs/<slug>/x.png`；
+  GitHub Pages 构建会自动补 `/ai4u` 前缀，本地不用写
+```
+
+改 md 后：本地 dev 需**重启**（loader 在模块顶层只执行一次）；生产 push 后 CI 全新构建无影响。
+新增依赖解析管线（unified/remark 系 + gray-matter）都在构建期跑，浏览器零开销。
 
 ## 常用命令
 

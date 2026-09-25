@@ -415,6 +415,14 @@
     border-left: 3px solid var(--accent);
     padding-left: var(--space-m);
   }
+  /* markdown 渲染新增元素（图文教程）— 全部走 semantic token */
+  .doc-body img { height: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .doc-body ol { padding-left: 1.4em; display: grid; gap: var(--space-2xs); line-height: 1.9; }
+  .doc-body code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-sunk); padding: 0.1em 0.4em; border-radius: var(--radius-sm); }
+  .doc-body table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); }
+  .doc-body th, .doc-body td { border: 1px solid var(--border); padding: var(--space-2xs) var(--space-s); text-align: left; line-height: 1.7; }
+  .doc-body th { background: var(--bg-sunk); font-weight: 700; }
+  .doc-body strong { font-weight: 700; }
   .doc-adjacent { margin-top: var(--space-xl); display: flex; justify-content: space-between; gap: var(--space-s); border-top: 1px solid var(--border); padding-top: var(--space-m); }
   .doc-adjacent a { text-decoration: none; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--accent); min-height: 44px; display: inline-flex; align-items: center; }
   @media (hover: hover) and (pointer: fine) {

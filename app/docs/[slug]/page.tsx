@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { DOCS, getAdjacent, getDoc, type DocBlock } from "@/content/docs";
+import { DOCS, getAdjacent, getDoc } from "@/content/docs";
 
 export function generateStaticParams() {
   return DOCS.map((d) => ({ slug: d.slug }));
@@ -21,30 +21,6 @@ export async function generateMetadata({
   };
 }
 
-/** 正文块渲染 — 阅读页正文区不做任何滚动动画（需求硬约束）。 */
-function Block({ block }: { block: DocBlock }) {
-  switch (block.type) {
-    case "h2": {
-      const id = encodeURIComponent(block.text);
-      return <h2 id={id}>{block.text}</h2>;
-    }
-    case "list":
-      return (
-        <ul>
-          {block.items.map((it) => (
-            <li key={it.slice(0, 16)}>{it}</li>
-          ))}
-        </ul>
-      );
-    case "note":
-      return <aside className="doc-note">{block.text}</aside>;
-    case "quote":
-      return <blockquote className="doc-quote">{block.text}</blockquote>;
-    default:
-      return <p>{block.text}</p>;
-  }
-}
-
 export default async function DocPage({
   params,
 }: {
@@ -55,7 +31,6 @@ export default async function DocPage({
   if (!doc) notFound();
 
   const { prev, next } = getAdjacent(slug);
-  const toc = doc.blocks.filter((b): b is Extract<DocBlock, { type: "h2" }> => b.type === "h2");
   const dateKnown = !doc.date.includes("["); // 占位日期不标注为最后编辑日
 
   return (
@@ -75,11 +50,8 @@ export default async function DocPage({
           <h1 className="doc-title">{doc.title}</h1>
           <p className="doc-summary">{doc.summary}</p>
         </header>
-        <div className="doc-body">
-          {doc.blocks.map((b, i) => (
-            <Block key={i} block={b} />
-          ))}
-        </div>
+        {/* 正文 HTML 构建期由 markdown 编译生成（remark 管线），来源仅本仓库 content/docs/*.md */}
+        <div className="doc-body" dangerouslySetInnerHTML={{ __html: doc.html }} />
         <nav className="doc-adjacent" aria-label="上一篇下一篇">
           {prev ? (
             <Link href={`/docs/${prev.slug}`} rel="prev">← 上一篇：{prev.title}</Link>
@@ -94,14 +66,14 @@ export default async function DocPage({
         </nav>
       </article>
 
-      {toc.length > 0 && (
+      {doc.toc.length > 0 && (
         <aside className="doc-toc" aria-label="本页目录">
           <p className="doc-toc__label">本页目录</p>
           <nav>
             <ul>
-              {toc.map((h) => (
-                <li key={h.text}>
-                  <a href={`#${encodeURIComponent(h.text)}`}>{h.text}</a>
+              {doc.toc.map((h) => (
+                <li key={h.id}>
+                  <a href={`#${h.id}`}>{h.text}</a>
                 </li>
               ))}
             </ul>
