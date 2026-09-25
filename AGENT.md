@@ -56,8 +56,8 @@ GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` →
 
 | 字段 | 现状 | 补什么 |
 |---|---|---|
-| `SITE.url` | `http://localhost:3000` | 正式域名（影响 OG / canonical / sitemap 绝对地址） |
+| `SITE.url` | `https://qiuy-collab.github.io/ai4u` | 已指向 Pages；换正式域名时改这里（影响 OG / canonical / sitemap） |
 | `SITE.join.groupNumber` | 空串 | 真实 QQ 群号（补上后复制按钮自动出现） |
 | `ACT_DOING.timeline[*].date` | 空串 | 活动真实日期（补上后日期行自动渲染） |
 
-另有：真二维码图替换 join 卡占位框（`components/ui/JoinCard.tsx`）；OG 图目前拉丁字排版（`app/opengraph-image.tsx`），有中文 webfont 后可改。
+另有：真二维码图替换 join 卡占位框（`components/ui/JoinCard.tsx`）。品牌图（favicon / apple-icon / OG 卡）是 `public/` 静态文件，由 `node scripts/generate-assets.mjs` 生成，改设计后重跑脚本，不要再建 ImageResponse route（静态导出下产物为空目录，线上会 404）。

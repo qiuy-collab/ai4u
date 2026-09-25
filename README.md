@@ -33,10 +33,14 @@ node scripts/probe.mjs       # 验收 probe（需 BASE_URL，默认 3111，用�
 
 ## 上线前 checklist
 
-1. `content/site.ts`：替换 `[加入方式占位：QQ 群号 / 二维码]`、`SITE.url` 改真实域名
-2. `content/docs.ts`：替换全部 `[...]` 占位（见下方清单）、`join-card__qr` 换真二维码图
-3. `app/opengraph-image.tsx` 目前是拉丁字排版（ImageResponse 缺中文字体），有品牌字体后可加中文
+1. `content/site.ts`：补 `SITE.join.groupNumber`（真实 QQ 群号，补上后复制按钮自动出现）；换正式域名时改 `SITE.url`
+2. `content/docs.ts` / 时间线日期：未确认事实保持空值，组件自动不渲染；`join-card__qr` 换真二维码图
+3. 品牌图（`public/icon.png` / `apple-icon.png` / `og.png`）由 `node scripts/generate-assets.mjs` 生成，中文渲染正常；改设计后重跑脚本
 4. canonical：有域名后在 `layout.tsx` 加 `alternates.canonical`
+
+## 部署
+
+GitHub Pages：push 到 `main` 自动部署（`.github/workflows/deploy.yml`），线上地址 `https://qiuy-collab.github.io/ai4u/`。CI 以 `GITHUB_PAGES=true` 构建启用静态导出 + basePath，本地构建不受影响。
 
 ## 待补占位清单（[…]）
 

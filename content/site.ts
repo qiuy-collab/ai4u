@@ -2,7 +2,7 @@ export const SITE = {
   name: "AI4U",
   nameLong: "AI4U · AI for You",
   tagline: "把 AI 用成日常",
-  url: "http://localhost:3000",
+  url: "https://qiuy-collab.github.io/ai4u", // GitHub Pages 地址；换正式域名时改这里
   join: {
     groupLabel: "加入 AI4U",
     groupNumber: "", // 真实群号补上前保持空字符串——JoinCard 按空值降级：不渲染复制按钮，不假装可复制

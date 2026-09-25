@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/content/site";
 import { DOCS } from "@/content/docs";
 
+// 静态导出（GitHub Pages）必需：声明此 route 为纯静态
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = SITE.url;
   return [
