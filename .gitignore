@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+
+# 本地产物与日志
+*.log
+screenshots/
+
+# 系统文件
+.DS_Store
+Thumbs.db
