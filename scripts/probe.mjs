@@ -87,10 +87,16 @@ for (const vp of [
         await page.screenshot({ path: `${OUT}/doc-motion-top.png` });
       }
     }
-    // 首页滚动中段截图（动效 on）：看加入幕
+    // 首页滚动中段截图（动效 on）：看 ActWhat 水彩大字/拱形画廊与加入幕
     if (vp.name === "1440" && !reduce) {
       const page = ctx.pages()[0];
       await page.goto(BASE + "/", { waitUntil: "networkidle" });
+      await page.evaluate(() => window.scrollTo(0, document.querySelector(".act-what__mega").offsetTop - 80));
+      await page.waitForTimeout(900);
+      await page.screenshot({ path: `${OUT}/home-motion-what.png` });
+      await page.evaluate(() => window.scrollTo(0, document.querySelector(".arches").offsetTop - 60));
+      await page.waitForTimeout(900);
+      await page.screenshot({ path: `${OUT}/home-motion-arches.png` });
       await page.evaluate(() => window.scrollTo(0, document.querySelector(".act-join").offsetTop - 80));
       await page.waitForTimeout(900);
       await page.screenshot({ path: `${OUT}/home-motion-join.png` });
