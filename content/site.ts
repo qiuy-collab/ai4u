@@ -24,9 +24,7 @@ export const HERO = {
 } as const;
 
 export const ACT_WHAT = {
-  prompt: "AI4U 是什么？",
-  mega: "AI4U",
-  // Agent 名词跑马灯（解释性短语不上首页）
+  // Agent 名词弧形跑马灯（解释性短语不上首页；提问行文案按需求删除）
   terms: ["Agent", "Context", "Prompt", "Skill", "Codex", "Claude Code", "MCP", "Tool Use"],
 } as const;
 

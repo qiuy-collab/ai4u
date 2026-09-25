@@ -1,27 +1,21 @@
-import PromptLine from "@/components/ui/PromptLine";
 import { ACT_WHAT } from "@/content/site";
 
 /**
- * Act 1 · 是什么 — 巨大墨字 + 水彩色带横穿 + Agent 名词跑马灯。
- * 字母保持实色完整可辨（墨 + ember 点缀「4」），5 条硬边半透明水彩色带
- * 压在字前、比字大并延伸出字外，微 blur 柔边；滚动 scrub 时各带异速横移，
- * 字被不同颜色反复穿过（套色错印参考图的站内色近似）。
- * 静态即构图终态（rm / 无 supports 可读）；aria-hidden 装饰，语义由 vh h2 承担。
+ * Act 1 · 是什么 — 巨大墨字压水彩晕染打底 + Agent 名词弧形跑马灯。
+ * 字母实色完整可辨（墨 + ember 点缀「4」）；字后 2 大块 + 字前 1 角块
+ * 有机水彩晕染（multiply 交叠变深）+ 纸纹统一层打底，滚动 scrub 时
+ * 各块缓慢洇动。静态即构图终态（rm / 无 supports 可读）；aria-hidden 装饰。
  */
 export default function ActWhat() {
   return (
-    <section className="act-what gutter" aria-labelledby="act-what-h">
-      <PromptLine text={ACT_WHAT.prompt} />
-      <h2 id="act-what-h" className="vh">{ACT_WHAT.prompt}</h2>
+    <section className="act-what gutter">
       <p className="act-what__mega" aria-hidden="true">
-        <b className="mega-band mega-band--1" />
-        <b className="mega-band mega-band--2" />
+        <i className="mega-wash mega-wash--1" />
+        <i className="mega-wash mega-wash--2" />
         <span className="mega__word">
           AI<span className="mega-accent">4</span>U
         </span>
-        <b className="mega-band mega-band--3" />
-        <b className="mega-band mega-band--4" />
-        <b className="mega-band mega-band--5" />
+        <i className="mega-wash mega-wash--3" />
       </p>
       <div className="marquee" role="group" aria-label="AI4U 常聊的词">
         <div className="marquee__track">
