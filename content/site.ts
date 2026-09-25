@@ -11,7 +11,7 @@ export const SITE = {
   },
 } as const;
 
-/* 右上角导航 — 只留两个入口（首页主体另有 here/文档/join us 三入口，见 ACT_START） */
+/* 右上角导航 — 只留两个入口 */
 export const NAV = [
   { label: "文档", href: "/docs" },
   { label: "join us", href: "/#join" },
@@ -28,21 +28,6 @@ export const ACT_WHAT = {
   highlight: "AI for You。",
   // 短语标签：跑马灯内容（解释性正文一律不上首页）
   nos: [{ k: "不卖课" }, { k: "不设门槛" }, { k: "不端着" }],
-} as const;
-
-export const ACT_DOING = {
-  prompt: "最近在做什么？",
-  timeline: [{ title: "工具试用" }, { title: "经验记录" }, { title: "线下见面" }],
-} as const;
-
-export const ACT_START = {
-  prompt: "从哪里开始？",
-  // 首页主体三入口（用户约定：here / 文档 / join us）
-  entries: [
-    { label: "here", href: "/docs/whats-agent" },
-    { label: "文档", href: "/docs" },
-    { label: "join us", href: "/#join" },
-  ],
 } as const;
 
 export const ACT_JOIN = {

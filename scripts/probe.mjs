@@ -39,12 +39,6 @@ function summary(page) {
       reducedMotionTrapped: hidden.slice(0, 12),
       trappedCount: hidden.length,
       title: document.title,
-      timelineH: (() => {
-        const line = document.querySelector(".act-doing__line");
-        const tl = document.querySelector(".act-doing__timeline");
-        if (!line || !tl) return null;
-        return { line: Math.round(line.getBoundingClientRect().height), tl: Math.round(tl.getBoundingClientRect().height) };
-      })(),
     };
   });
 }
@@ -75,18 +69,16 @@ for (const vp of [
         (e) => !(p.status === 404 && e.includes("status of 404")),
       );
       const tag = `${vp.name}${reduce ? "-rm" : ""}/${p.name}`;
-      const lineBad = reduce && s.timelineH ? s.timelineH.line < s.timelineH.tl * 0.5 : false;
       const bad =
         res.status() !== p.status ||
         s.overflowX > 0 ||
         s.h1 !== 1 ||
         s.lang !== "zh-Hans" ||
         realErrors.length > 0 ||
-        (reduce && s.trappedCount > 0) ||
-        lineBad;
+        (reduce && s.trappedCount > 0);
       if (bad) fail++;
       console.log(
-        `${bad ? "FAIL" : "PASS"} ${tag} status=${res.status()} overflowX=${s.overflowX} h1=${s.h1}(${s.h1Text.join("|") || "-"}) lang=${s.lang} consoleErr=${realErrors.length}${reduce ? ` trapped=${s.trappedCount}:${s.reducedMotionTrapped.join(" ;; ") || "none"} line=${s.timelineH ? `${s.timelineH.line}/${s.timelineH.tl}` : "-"}${lineBad ? " LINE-TRAPPED" : ""}` : ""}${realErrors.length ? ` [${realErrors.join(" ;; ")}]` : ""}`,
+        `${bad ? "FAIL" : "PASS"} ${tag} status=${res.status()} overflowX=${s.overflowX} h1=${s.h1}(${s.h1Text.join("|") || "-"}) lang=${s.lang} consoleErr=${realErrors.length}${reduce ? ` trapped=${s.trappedCount}:${s.reducedMotionTrapped.join(" ;; ") || "none"}` : ""}${realErrors.length ? ` [${realErrors.join(" ;; ")}]` : ""}`,
       );
       if (p.name === "home" && vp.name === "1440") {
         await page.screenshot({ path: `${OUT}/home-${reduce ? "rm" : "motion"}-top.png` });
@@ -95,13 +87,13 @@ for (const vp of [
         await page.screenshot({ path: `${OUT}/doc-motion-top.png` });
       }
     }
-    // 首页滚动中段截图（动效 on）：看时间线幕
+    // 首页滚动中段截图（动效 on）：看加入幕
     if (vp.name === "1440" && !reduce) {
       const page = ctx.pages()[0];
       await page.goto(BASE + "/", { waitUntil: "networkidle" });
-      await page.evaluate(() => window.scrollTo(0, document.querySelector(".act-doing").offsetTop - 80));
+      await page.evaluate(() => window.scrollTo(0, document.querySelector(".act-join").offsetTop - 80));
       await page.waitForTimeout(900);
-      await page.screenshot({ path: `${OUT}/home-motion-act2.png` });
+      await page.screenshot({ path: `${OUT}/home-motion-join.png` });
     }
     await ctx.close();
   }
