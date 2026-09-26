@@ -30,6 +30,8 @@ const CATEGORY_LABEL: Record<DocCategory, string> = {
 export interface TocItem {
   id: string;
   text: string;
+  /** 该 H2 下的 H3 子标题（保持文档顺序）；无子标题时为空数组 */
+  children: TocItem[];
 }
 
 export interface Doc {
@@ -108,12 +110,25 @@ function rehypeCodeLang() {
   };
 }
 
-/** 从编译后的 HTML 提取 h2 目录（id 与 rehype-slug 产出天然一致） */
+/**
+ * 从编译后的 HTML 提取目录（id 与 rehype-slug 产出天然一致）。
+ * 两级结构：H2 为章、其后的 H3 归入该章 children（正文从 H2 起，H1 由页面标题承担）；
+ * 孤儿 H3（前面没有 H2）丢弃——防御性处理，正常文档不会出现。
+ */
 function extractToc(html: string): TocItem[] {
   const toc: TocItem[] = [];
-  const re = /<h2 id="([^"]*)">([\s\S]*?)<\/h2>/g;
+  const re = /<h([23]) id="([^"]*)">([\s\S]*?)<\/h\1>/g;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(html)) !== null) toc.push({ id: m[1], text: m[2] });
+  let cur: TocItem | null = null;
+  while ((m = re.exec(html)) !== null) {
+    const item: TocItem = { id: m[2], text: m[3].replace(/<[^>]+>/g, ""), children: [] };
+    if (m[1] === "2") {
+      cur = item;
+      toc.push(item);
+    } else if (cur) {
+      cur.children.push(item);
+    }
+  }
   return toc;
 }
 

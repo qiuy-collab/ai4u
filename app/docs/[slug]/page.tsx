@@ -2,7 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DOCS, getAdjacent, getDoc } from "@/content/docs";
+import type { TocItem } from "@/content/docs";
 import CodeCopy from "@/components/ui/CodeCopy";
+
+/** 两级目录列表（H2 章 + H3 节缩进），桌面侧栏与移动端抽屉共用 */
+function TocList({ items }: { items: TocItem[] }) {
+  return (
+    <ul>
+      {items.map((h) => (
+        <li key={h.id}>
+          <a href={`#${h.id}`}>{h.text}</a>
+          {h.children.length > 0 && (
+            <ul>
+              {h.children.map((c) => (
+                <li key={c.id}>
+                  <a href={`#${c.id}`}>{c.text}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function generateStaticParams() {
   return DOCS.map((d) => ({ slug: d.slug }));
@@ -44,19 +67,14 @@ export default async function DocPage({
           <h1 className="doc-title">{doc.title}</h1>
           <p className="doc-summary">{doc.summary}</p>
         </header>
-        {/* 移动端目录抽屉（桌面 display:none，桌面走右侧 sticky 目录）：
-            details/summary 原生可弹出可收起，零客户端 JS */}
+        {/* 移动端目录悬浮钮（桌面 display:none，桌面走右侧 sticky 目录）：
+            details/summary 原生可弹出可收起，零客户端 JS；
+            钮 fixed 在右下角，点开的目录面板浮出在其上方（样式见 .doc-toc-drawer） */}
         {doc.toc.length > 0 && (
           <details className="doc-toc-drawer">
-            <summary className="doc-toc-drawer__label mono">本页目录</summary>
+            <summary className="doc-toc-drawer__label mono">目录</summary>
             <nav aria-label="本页目录（移动端）">
-              <ul>
-                {doc.toc.map((h) => (
-                  <li key={h.id}>
-                    <a href={`#${h.id}`}>{h.text}</a>
-                  </li>
-                ))}
-              </ul>
+              <TocList items={doc.toc} />
             </nav>
           </details>
         )}
@@ -82,13 +100,7 @@ export default async function DocPage({
         <aside className="doc-toc" aria-label="本页目录">
           <p className="doc-toc__label">本页目录</p>
           <nav>
-            <ul>
-              {doc.toc.map((h) => (
-                <li key={h.id}>
-                  <a href={`#${h.id}`}>{h.text}</a>
-                </li>
-              ))}
-            </ul>
+            <TocList items={doc.toc} />
           </nav>
         </aside>
       )}

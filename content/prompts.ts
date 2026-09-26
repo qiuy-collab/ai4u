@@ -1,7 +1,7 @@
 /**
  * 部署提示词页的元数据。
- * 正文在 public/prompt/<slug>.txt——网页（app/prompt/[slug]）与纯文本共用同一份内容，
- * 便于 Agent 直接读取 .txt 或用户从页面复制。
+ * 正文在 public/prompt/<slug>.md——网页（app/prompt/[slug]）与 /prompt/<slug>.md 直链
+ * 共用同一份未渲染原文，便于 Agent 直接读取或用户从页面复制。
  */
 export interface PromptMeta {
   slug: string;
