@@ -211,7 +211,9 @@
     top: 0;
     display: flex;
     align-items: center;
-    gap: var(--space-l);
+    /* 分隔符偏移量：相邻两词的视觉空隙平均约 120px，取其半 → ✕ 落在两词之间。
+       （值随弧的投影逐对浮动，静态取平均即可，见 .marquee__x 注释） */
+    --mq-x-off: 3.7rem;
     font-size: var(--text-h3);
     font-weight: 900;
     letter-spacing: 0.02em;
@@ -231,7 +233,18 @@
   .marquee__item:nth-child(6) { --arc-d: 62.5%; }
   .marquee__item:nth-child(7) { --arc-d: 75%; }
   .marquee__item:nth-child(8) { --arc-d: 87.5%; }
-  .marquee__x { color: var(--accent); font-size: var(--text-sm); }
+  /* 分隔符：绝对定位到「词末之外」，落在相邻两词的视觉空隙中部。
+     改动前 ✕ 是词的前缀（紧贴右侧词 40px、距左词 72~151px，观感明显偏右）；
+     空隙宽度随弧的切线角逐对浮动（水平投影 ≠ 弧长），纯 CSS 无法逐对精确，
+     取平均空隙的一半做静态近似——两侧偏差收敛到 ±30px 以内。 */
+  .marquee__x {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translate(calc(-50% + var(--mq-x-off)), -50%);
+    color: var(--accent);
+    font-size: var(--text-sm);
+  }
   @media (prefers-reduced-motion: no-preference) {
     .marquee__item { animation: arc-run 26s linear infinite; }
     /* 动态相位：delay 按词宽占比分配（含 ✕ 前缀），词距沿弧均匀、首尾相接铺满整条弧 */
@@ -243,17 +256,37 @@
     .marquee__item:nth-child(6) { animation-delay: -15.5s; }
     .marquee__item:nth-child(7) { animation-delay: -19.8s; }
     .marquee__item:nth-child(8) { animation-delay: -22.4s; }
-    /* 悬停暂停：词停弧上可读可点 */
-    .marquee:hover .marquee__item { animation-play-state: paused; }
     @keyframes arc-run {
       from { offset-distance: 0%; }
       to { offset-distance: 100%; }
     }
   }
-  @media (max-width: 720px) {
-    /* 窄屏：390 逻辑坐标系（中点对准视口中心），容器高度同步收窄 */
-    .marquee { height: 240px; }
-    .marquee__group { left: calc(50% - 195px); --arc-path: path("M 540 240 C 380 50 10 50 -150 240"); }
+  @media (max-width: 780px) {
+    /* 窄屏不再走弧：弧长不足时 8 个词（含 Claude Code 这类长词）会挤到重叠，
+       而弧坐标系以 1440 设计，390 宽下横向可见段太窄。改为静态换行排列——
+       居中、不重叠、不需要横滑；rm / 无动画下形态一致。
+       ✕ 用对称 padding 独占词间间距，保证在两词正好居中。 */
+    .marquee { height: auto; overflow: visible; }
+    .marquee__group {
+      left: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-s) 0;
+      padding-block: var(--space-m);
+    }
+    .marquee__item {
+      position: static;
+      offset-path: none;
+      font-size: 1.25rem;
+      --arc-d: 0%;
+    }
+    .marquee__x {
+      position: static;
+      transform: none;
+      padding-inline: calc(var(--space-m) / 2);
+    }
   }
   /* 回退：不支持 motion-path 的旧浏览器 → 静态一行词 */
   @supports not (offset-path: path("M 0 0")) {
@@ -378,7 +411,6 @@
     gap: var(--space-xl);
   }
   .site-footer__logo { font-weight: 700; }
-  .site-footer__blurb { margin-top: var(--space-xs); color: var(--text-muted); font-size: var(--text-sm); line-height: 1.8; }
   .site-footer__nav ul { list-style: none; padding: 0; display: grid; gap: var(--space-2xs); }
   .site-footer__link { color: var(--text); text-decoration: none; font-size: var(--text-sm); }
   @media (hover: hover) and (pointer: fine) {
@@ -397,7 +429,7 @@
 
   /* ---------- 列表页 ---------- */
   /* 列表末行到页脚之间留出呼吸，避免直接贴死（与阅读页 padding-bottom 同一节奏） */
-  .docs-index { padding-bottom: var(--section-tight); }
+  .docs-index { padding-bottom: calc(var(--section-tight) * 1.5); }
   .docs-head { padding-top: calc(var(--nav-h) + var(--section-tight)); }
   .docs-head__title { margin-top: var(--space-s); font-size: var(--text-h2); font-weight: 900; }
   .docs-head__sub { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.9; }
@@ -435,55 +467,189 @@
   /* ---------- 阅读页 ---------- */
   .prompt-page { padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: var(--section-tight); }
   .prompt-page .doc-body pre { white-space: pre-wrap; }
-  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: var(--section-tight); }
+  /* 提示词页头部的类别行（「部署提示词」）。
+     阅读页已按要求不再渲染元信息行，此样式只服务 /prompt/[slug]——不要跟着阅读页一起删。 */
+  .doc-meta { display: flex; flex-wrap: wrap; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
+  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: calc(var(--section-tight) * 1.5); }
   /* 正文列限宽：中文正文用 ch 会偏窄（68ch ≈ 638px ≈ 34 汉字/行），改用 rem 对齐中文阅读宽度 */
-  .doc-main { min-width: 0; max-width: 48rem; margin-inline: auto; }
+  .doc-main { min-width: 0; max-width: 56rem; margin-inline: auto; }
   .doc-back { display: inline-flex; align-items: center; gap: 0.4em; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); text-decoration: none; min-height: 44px; margin-bottom: var(--space-2xs); }
   @media (hover: hover) and (pointer: fine) {
     .doc-back:hover { color: var(--accent-deep); }
   }
-  /* meta 行可换行：日期等字段较长时不再把「教程」压成单字竖排 */
-  .doc-meta { display: flex; flex-wrap: wrap; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
   .doc-title { margin-top: var(--space-s); font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.5rem); font-weight: 900; line-height: 1.2; }
   .doc-summary { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.75; }
-  /* 正文节奏：小 gap 保持段间紧凑，heading 上方拉开形成分节呼吸 */
-  .doc-body { margin-top: var(--space-l); display: grid; gap: 0.625rem; max-width: 48rem; }
-  .doc-body > h2:first-child, .doc-body > h3:first-child { margin-top: 0; }
-  .doc-body h2 { font-size: var(--text-h3); font-weight: 700; margin-top: var(--space-l); margin-bottom: 0.25rem; }
-  .doc-body h3 { font-size: 1.1875rem; font-weight: 700; margin-top: var(--space-m); margin-bottom: 0.125rem; }
-  .doc-body h4 { font-weight: 700; margin-top: var(--space-s); }
-  .doc-body p { line-height: 1.75; }
-  .doc-body ul, .doc-body ol { padding-left: 1.4em; display: grid; gap: 0.25rem; line-height: 1.75; }
+  /* 正文节奏：小 gap 保持段间紧凑，heading 上方拉开形成分节呼吸。
+     排版口径：纸白编辑风——层级靠字号/字重/空隙拉开，ember 只做「指示」
+     （标题竖标、列表 marker、链接下划线），不做色块填充。 */
+  .doc-body { margin-top: var(--space-l); display: grid; gap: 0.75rem; max-width: 56rem; }
+  .doc-body > * { min-width: 0; } /* grid 子项可收缩，宽表格/长代码不撑破列宽 */
+  .doc-body > h2:first-child, .doc-body > h3:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+
+  /* h2 = 章节：通栏细线拉出分节呼吸，左侧 ember 竖标做定位锚点 */
+  .doc-body h2 {
+    position: relative;
+    margin-top: var(--space-xl);
+    padding: var(--space-m) 0 0 0.8em;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-h3);
+    font-weight: 800;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .doc-body h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0.24em;
+    width: 0.22em;
+    height: 0.78em;
+    background: var(--accent);
+  }
+  /* h3 = 小节：比 h2 轻一档的同族竖标，做层级递进而非并列 */
+  .doc-body h3 {
+    position: relative;
+    margin-top: var(--space-l);
+    padding-left: 0.72em;
+    font-size: 1.1875rem;
+    font-weight: 750;
+    line-height: 1.45;
+    text-wrap: balance;
+  }
+  .doc-body h3::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.32em;
+    width: 3px;
+    height: 0.88em;
+    background: color-mix(in oklab, var(--accent) 55%, var(--ink-0));
+  }
+  /* h4：只靠字重区分，不再加装饰（三级以上装饰会过载） */
+  .doc-body h4 { margin-top: var(--space-m); font-size: 1.0625rem; font-weight: 750; }
+  .doc-body p { line-height: 1.8; }
+
+  /* 列表：去掉默认圆点，marker 换成 ember 短横（与 h2/h3 竖标同语言） */
+  .doc-body ul, .doc-body ol { padding-left: 1.5em; display: grid; gap: 0.35rem; line-height: 1.8; }
+  .doc-body ul { list-style: none; }
+  .doc-body ul > li { position: relative; }
+  .doc-body ul > li::before {
+    content: "";
+    position: absolute;
+    left: -1.05em;
+    top: 0.78em;
+    width: 0.45em;
+    height: 2px;
+    background: var(--accent-deep);
+  }
+  .doc-body ol > li::marker { color: var(--accent-deep); font-weight: 700; font-family: var(--font-mono); font-size: 0.9em; }
+  .doc-body li > ul, .doc-body li > ol { margin-top: 0.35rem; }
+  .doc-body li ul > li::before { width: 0.3em; background: var(--text-muted); }
+  /* 提示块（`> [!NOTE]`）：ember 竖条 + 荧光浅底，是「需要注意」而非普通引用 */
   .doc-note {
-    border: 1px solid var(--border);
-    background: color-mix(in oklab, var(--highlight) 14%, var(--paper-0));
-    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent);
+    background: color-mix(in oklab, var(--highlight) 22%, var(--paper-0));
     padding: var(--space-s) var(--space-m);
-    line-height: 1.75;
+    line-height: 1.8;
     font-size: 0.9375em;
   }
+  /* 引用（金句）：墨色竖条 + 正文字号微放大，比正文更「站得住」 */
   .doc-quote {
-    border-left: 1px solid var(--border-strong);
-    padding-left: var(--space-s);
-    font-size: 0.9375em;
-    color: var(--text-muted);
-    line-height: 1.75;
+    border-left: 3px solid var(--ink-0);
+    padding: 0.1em 0 0.1em var(--space-m);
+    font-size: 1.0625em;
+    line-height: 1.8;
   }
   .doc-quote p + p { margin-top: 0.375rem; }
-  /* markdown 渲染新增元素（图文教程）— 全部走 semantic token */
-  .doc-body img { margin-block: var(--space-xs); height: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-  .doc-body code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-sunk); padding: 0.1em 0.4em; border-radius: var(--radius-sm); }
-  .doc-body pre {
-    overflow-x: auto; max-width: 100%;
-    background: var(--bg-sunk); border: 1px solid var(--border); border-radius: var(--radius-sm);
-    padding: var(--space-s) var(--space-m); font-size: 0.875em; line-height: 1.7;
+  /* ---------- markdown 元素（图文教程，全部走 semantic token） ---------- */
+  /* 正文内链接：此前无样式 → 落在浏览器默认蓝紫，与纸白+ember 冲突；统一到深橙 + 半透明下划线 */
+  .doc-body a {
+    color: var(--accent-deep);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in oklab, var(--accent-deep) 38%, transparent);
+    text-underline-offset: 0.18em;
   }
-  .doc-body pre code { background: transparent; padding: 0; font-size: 1em; }
-  .doc-body hr { border: 0; border-top: 1px solid var(--border); margin-block: var(--space-m); }
+  @media (hover: hover) and (pointer: fine) {
+    .doc-body a:hover { text-decoration-color: var(--accent-deep); }
+  }
+  .doc-body img {
+    margin-block: var(--space-s);
+    height: auto;
+    border: 1px solid var(--border-strong);
+  }
+  .doc-body strong { font-weight: 750; }
+  .doc-body del { color: var(--text-muted); }
+  .doc-body hr { border: 0; border-top: 1px solid var(--border-strong); margin-block: var(--space-l); }
+
+  /* 行内代码：单独一段浅底 + 细边，与正文区分但不抢眼 */
+  .doc-body code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--bg-sunk);
+    border: 1px solid var(--border);
+    padding: 0.08em 0.36em;
+    overflow-wrap: anywhere;
+  }
+  /* 代码块：顶部留出语言标签栏的位置 */
+  .doc-body pre {
+    position: relative;
+    overflow-x: auto;
+    max-width: 100%;
+    background: var(--paper-1);
+    border: 1px solid var(--border);
+    padding: var(--space-s) var(--space-m);
+    font-size: 0.875em;
+    line-height: 1.7;
+    scrollbar-width: thin;
+  }
+  /* 仅带语言标签的代码块顶部预留标签栏高度（提示词页的裸 <pre> 不留白） */
+  .doc-body pre[data-lang] { padding-top: calc(var(--space-m) + 0.5rem); }
+  .doc-body pre code { background: transparent; border: 0; padding: 0; font-size: 1em; }
+  /* 语言标签：构建期由 rehypeCodeLang 写入 pre[data-lang]，纯 CSS 展示 */
+  .doc-body pre[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    inset: 0 0 auto 0;
+    padding: 0.34em var(--space-m);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: color-mix(in oklab, var(--ink-0) 5%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* 语法高亮配色：hljs token → 纸白底上的低饱和深色。
+     这几个色是「代码块专用」，站点语义 token 里没有对应角色，故定义在
+     .doc-body 作用域内的局部变量，不污染 :root。 */
+  .doc-body {
+    --hl-comment: #8a8579;
+    --hl-keyword: var(--accent-deep);
+    --hl-string: #2f6f4f;
+    --hl-number: #9a5b00;
+    --hl-func: #1f4e79;
+    --hl-builtin: #7a3ea8;
+  }
+  .hljs-comment, .hljs-quote { color: var(--hl-comment); font-style: italic; }
+  .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag, .hljs-name, .hljs-tag { color: var(--hl-keyword); font-weight: 700; }
+  .hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string, .hljs-selector-attr, .hljs-selector-pseudo { color: var(--hl-string); }
+  .hljs-number, .hljs-variable, .hljs-template-variable, .hljs-type, .hljs-params { color: var(--hl-number); }
+  .hljs-title, .hljs-title.class_, .hljs-title.function_, .hljs-section, .hljs-selector-id, .hljs-selector-class { color: var(--hl-func); font-weight: 700; }
+  .hljs-built_in, .hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta { color: var(--hl-builtin); }
+  .hljs-deletion { color: var(--accent-deep); }
+  .hljs-emphasis { font-style: italic; }
+  .hljs-strong { font-weight: 700; }
+
+  /* 表格：表头深底反白，行斑马纹 + hover 高亮（长表格可横向定位） */
   .doc-body table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); }
-  .doc-body th, .doc-body td { border: 1px solid var(--border); padding: 0.4em 0.75em; text-align: left; line-height: 1.6; }
-  .doc-body th { background: var(--bg-sunk); font-weight: 700; }
-  .doc-body strong { font-weight: 700; }
+  .doc-body th, .doc-body td { border: 1px solid var(--border); padding: 0.55em 0.8em; text-align: left; line-height: 1.65; vertical-align: top; }
+  .doc-body thead th { background: var(--ink-0); color: var(--paper-0); border-color: var(--ink-0); font-weight: 700; }
+  .doc-body tbody tr:nth-child(even) { background: color-mix(in oklab, var(--paper-1) 55%, transparent); }
+  @media (hover: hover) and (pointer: fine) {
+    .doc-body tbody tr:hover { background: color-mix(in oklab, var(--highlight) 28%, transparent); }
+  }
   .doc-adjacent { margin-top: var(--space-xl); display: flex; justify-content: space-between; gap: var(--space-s); border-top: 1px solid var(--border); padding-top: var(--space-m); }
   .doc-adjacent a { text-decoration: none; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--accent-deep); min-height: 44px; display: inline-flex; align-items: center; }
   @media (hover: hover) and (pointer: fine) {
@@ -521,6 +687,28 @@
   @media (hover: hover) and (pointer: fine) {
     .doc-toc a:hover { color: var(--text); }
   }
+  /* 移动端目录抽屉：桌面隐藏（桌面走上面的 sticky 侧栏），
+     移动端在 780 断点里 display:block。details 原生弹出/收起，零客户端 JS */
+  .doc-toc-drawer { display: none; }
+  .doc-toc-drawer__label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    min-height: 44px;
+    padding: var(--space-s) var(--space-m);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    cursor: pointer;
+    list-style: none;
+  }
+  .doc-toc-drawer__label::-webkit-details-marker { display: none; }
+  .doc-toc-drawer__label::after { content: "＋"; color: var(--accent-deep); }
+  .doc-toc-drawer[open] .doc-toc-drawer__label::after { content: "−"; }
+  .doc-toc-drawer > nav { padding: 0 var(--space-m) var(--space-m); }
+  .doc-toc-drawer ul { list-style: none; padding: 0; display: grid; gap: var(--space-2xs); font-size: var(--text-sm); }
+  .doc-toc-drawer a { color: var(--text-muted); text-decoration: none; display: block; padding-block: 0.35em; }
 
   /* ---------- 404 ---------- */
   .nf { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: var(--nav-h); }
@@ -530,14 +718,19 @@
 
   /* ---------- 移动端（390 基本可用：重动效简化） ---------- */
   @media (max-width: 780px) {
-    .marquee__item { gap: var(--space-m); font-size: 1.25rem; }
     .index-row__link { grid-template-columns: 1.6rem 1fr auto; }
     .index-row__cat { display: none; }
     .join-card { grid-template-columns: 1fr; }
     .join-card__qr { justify-self: start; }
     .site-footer__grid { grid-template-columns: 1fr; gap: var(--space-l); }
-    .doc-page { grid-template-columns: 1fr; }
-    .doc-toc { position: static; order: -1; border-top: 1px solid var(--border); padding-top: var(--space-s); }
+    /* 详情页移动端：单列，目录从右侧栏改为正文内的抽屉（桌面隐藏、此处显示） */
+    .doc-page { grid-template-columns: 1fr; gap: var(--space-m); }
+    .doc-toc { display: none; }
+    .doc-toc-drawer { display: block; }
+    /* 宽表格在窄屏改为可横滑，不再挤压成每列几个字。
+       注意不能给 width: max-content——那会让表格元素本身宽于容器、撑破视口（实测溢出 832px）；
+       display:block 后浏览器会把 table-cell 包进匿名表格盒，表格语义与列宽计算仍保留。 */
+    .doc-body table { display: block; overflow-x: auto; min-width: 100%; }
   }
 }
 
@@ -553,8 +746,12 @@
   }
   .site-nav__logo { font-weight: 800; letter-spacing: 0.08em; }
   .site-nav__link { opacity: 0.72; transition: opacity var(--dur-fast) var(--ease-out-expo), color var(--dur-fast) var(--ease-out-expo); }
+  /* 图标与文字的垂直对齐：两者行盒高度不同（SVG 18px vs 文字行高），
+     只靠 ul 的 align-items:center 时 SVG 会比文字高约 3.5px（实测）。
+     把 li 也变成 flex 居中容器，让两个 <a> 各自在等高 li 内居中，中线才对齐 */
   .site-nav__links { align-items: center; }
-  .site-nav__icon { display: inline-flex; align-items: center; }
+  .site-nav__links > li { display: flex; align-items: center; }
+  .site-nav__icon { display: flex; align-items: center; }
   .site-nav__icon svg { display: block; }
   @media (hover: hover) and (pointer: fine) {
     .site-nav__link:hover { opacity: 1; color: var(--hl-0); text-decoration: none; }
@@ -648,14 +845,22 @@
 
   .site-footer { background: var(--ink-0); color: var(--paper-0); }
   .site-footer__logo { font-weight: 800; letter-spacing: 0.08em; }
-  .site-footer__blurb, .site-footer__contact { color: rgba(244, 240, 232, 0.62); }
+  .site-footer__contact { color: rgba(244, 240, 232, 0.62); }
   .site-footer__link { color: var(--paper-0); }
   @media (hover: hover) and (pointer: fine) { .site-footer__link:hover { color: var(--hl-0); text-decoration: none; } }
 
   /* 标题不再限宽：18ch 在 40px 字号下仅 444px，中文长标题会被折成每行 9 字的「竖排」观感 */
   .doc-title { line-height: 1.25; }
-  .doc-note { border-left: 0; background: color-mix(in oklab, var(--highlight) 22%, transparent); }
   .doc-progress { top: var(--nav-h); height: 3px; }
+  /* 阅读页收紧左右内边距：.gutter 的 clamp(1.25rem, 5vw, 6rem) 在 1440/1920 下
+     分别留 72px / 96px，对阅读页过宽；正文列同时由 48rem 提到 56rem。
+     合计：1440 下正文 768 → 896px、左侧留白 184 → 约 133px */
+  .doc-page { padding-inline: clamp(1.25rem, 3vw, 3.5rem); gap: var(--space-l); }
+  /* width:100% 不能省：grid item 一旦带 margin-inline:auto 就不再 stretch，
+     宽度退化为 max-content（受 max-width 截断）——窄屏轨道（390 下 335px）
+     小于 56rem 时正文会撑破视口（实测溢出 832px）。width:100% 把它拉回轨道宽。 */
+  .doc-main { width: 100%; max-width: 56rem; }
+  .doc-body { max-width: 56rem; }
 
   @media (max-width: 780px) {
     .site-nav { height: 60px; }

@@ -37,7 +37,7 @@ export const ACT_JOIN = {
 } as const;
 
 export const FOOTER = {
-  blurb: "一伙人自己在维护，欢迎来聊。",
+  blurb: "", // 空串 = 页脚不渲染该行（口径见 AGENT.md「事实空位处理」）
   nav: [
     { label: "首页", href: "/" },
     { label: "内容", href: "/docs" },

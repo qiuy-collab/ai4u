@@ -25,8 +25,8 @@ export default function ActWhat() {
         <ul className="marquee__group">
           {ACT_WHAT.terms.map((t) => (
             <li key={t} className="marquee__item">
-              <span className="marquee__x mono" aria-hidden="true">✕</span>
               {t}
+              <span className="marquee__x mono" aria-hidden="true">✕</span>
             </li>
           ))}
         </ul>

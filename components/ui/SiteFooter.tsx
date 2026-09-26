@@ -9,7 +9,7 @@ export default function SiteFooter() {
       <div className="site-footer__grid gutter">
         <div className="site-footer__brand">
           <p className="site-footer__logo mono">AI4U<span className="caret" aria-hidden="true" /></p>
-          <p className="site-footer__blurb measure-narrow">{FOOTER.blurb}</p>
+          {FOOTER.blurb && <p className="site-footer__blurb measure-narrow">{FOOTER.blurb}</p>}
         </div>
         <nav aria-label="页脚导航" className="site-footer__nav">
           <ul>
