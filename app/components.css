@@ -348,15 +348,7 @@
     padding: var(--space-l);
     max-width: 44rem;
   }
-  .join-card__number {
-    margin-top: var(--space-2xs);
-    font-family: var(--font-mono);
-    font-size: var(--text-h3);
-    font-weight: 700;
-    overflow-wrap: anywhere;
-  }
-  .join-card__actions { margin-top: var(--space-m); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
-  .join-card__hint { font-size: var(--text-xs); color: var(--text-muted); }
+  .join-card__hint { margin-top: var(--space-m); font-size: var(--text-lg); color: var(--ink-0); }
   /* 悬停手感：卡体轻抬 + 边框 ember 呼应（与全站 hover 范式一致） */
   @media (hover: hover) and (pointer: fine) {
     .join-card {
@@ -371,37 +363,12 @@
   .join-card__qr {
     width: 148px;
     height: 148px;
-    border: 2px dashed var(--border-strong);
+    border: 2px solid var(--ink-0);
     display: grid;
     place-items: center;
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-    text-align: center;
+    overflow: hidden;
   }
-
-  /* ---------- btn（三角色：primary / secondary / quiet） ---------- */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5em;
-    min-height: 44px;
-    padding-inline: 1.25em;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    background: var(--accent-deep);
-    color: var(--accent-on);
-    cursor: pointer;
-    transition: background-color var(--dur-fast) var(--ease-out-expo), transform 90ms var(--ease-out-expo);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .btn--primary:hover { background: var(--accent-deep-hover); }
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn[disabled] { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+  .join-card__qr img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
   /* ---------- footer（2 栏 creative） ---------- */
   .site-footer { border-top: 1px solid var(--border); padding-block: var(--space-xl) var(--space-l); }
@@ -669,9 +636,7 @@
     background: rgba(244, 240, 232, 0.92);
     box-shadow: 10px 10px 0 rgba(21, 21, 21, 0.16);
   }
-  .join-card__qr { background: rgba(21, 21, 21, 0.04); }
-  .btn { border-radius: var(--radius-sm); background: var(--ink-0); color: var(--paper-0); font-weight: 700; }
-  @media (hover: hover) and (pointer: fine) { .btn--primary:hover { background: var(--accent-deep-hover); } }
+  .join-card__qr { background: #fff; }
 
   .site-footer { background: var(--ink-0); color: var(--paper-0); }
   .site-footer__logo { font-weight: 800; letter-spacing: 0.08em; }

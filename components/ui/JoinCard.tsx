@@ -1,69 +1,27 @@
-"use client";
+import { SITE } from "@/content/site";
 
-import { useRef, useState } from "react";
-import { ACT_JOIN, SITE } from "@/content/site";
+// 组件层引用 public/ 静态资源要自己拼 basePath 前缀（本地构建为空串）。
+const ASSET_PREFIX = process.env.NEXT_PUBLIC_ASSET_PREFIX ?? "";
 
 /**
- * 加入卡 — 全站视觉权重最高的一块。上线时只改 content/site.ts 的 groupNumber。
- * 空群号降级（真实现，不是注释谎言）：不渲染复制按钮、不渲染空 aria-label，
- * 群号位置显示 placeholderLabel，二维码框内文字改为「待更新」——不假装可扫码。
- * 复制按钮状态矩阵：rest / hover / active / focus-visible / success（2s 后回落）/ 无剪贴板权限降级「请复制」。
+ * 加入卡 — 全站视觉权重最高的一块。
+ * 微信群没有群号，加入方式就是扫码：右侧固定渲染二维码图（原「群号 + 复制按钮」范式已随微信群移除）。
+ * 二维码源图在 public/wechat-group-qr.png，换群时只替换这张图。
  */
 export default function JoinCard() {
-  const [state, setState] = useState<"idle" | "copied" | "manual">("idle");
-  const timer = useRef<number | undefined>(undefined);
-  const hasGroup = SITE.join.groupNumber.trim().length > 0;
-
-  async function copyGroup() {
-    const text = SITE.join.groupNumber;
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error("no clipboard");
-      await navigator.clipboard.writeText(text);
-      setState("copied");
-    } catch {
-      setState("manual"); // 降级：提示手动选择，不假装成功
-    }
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setState("idle"), 2400);
-  }
-
   return (
     <div className="join-card">
       <div className="join-card__info">
         <p className="eyebrow">{SITE.join.groupLabel}</p>
-        <p
-          className="join-card__number"
-          aria-label={hasGroup ? `群号：${SITE.join.groupNumber}` : undefined}
-        >
-          {hasGroup ? SITE.join.groupNumber : SITE.join.placeholderLabel}
-        </p>
-        {hasGroup && (
-          <div className="join-card__actions">
-            <button
-              type="button"
-              className="btn btn--primary"
-              onClick={copyGroup}
-              aria-live="polite"
-            >
-              <span className="btn__label">
-                {state === "copied" ? ACT_JOIN.copiedLabel : ACT_JOIN.copyLabel}
-              </span>
-            </button>
-            {state === "manual" && (
-              <p className="join-card__hint mono" role="status">
-                一键复制没成，群号在上面，手动复制就行
-              </p>
-            )}
-          </div>
-        )}
-        {!hasGroup && <p className="join-card__hint mono">{SITE.join.note}</p>}
+        <p className="join-card__hint">{SITE.join.hint}</p>
       </div>
-      <div
-        className="join-card__qr mono"
-        role="img"
-        aria-label={hasGroup ? "加入二维码" : "二维码待更新"}
-      >
-        <span aria-hidden="true">{hasGroup ? "扫码加入" : "待更新"}</span>
+      <div className="join-card__qr">
+        <img
+          src={`${ASSET_PREFIX}${SITE.join.qr}`}
+          alt={SITE.join.qrAlt}
+          width={148}
+          height={148}
+        />
       </div>
     </div>
   );
