@@ -40,6 +40,7 @@ export default async function DocPage({
 
       <article className="doc-main">
         <header>
+          <Link href="/docs" className="doc-back">← 返回内容列表</Link>
           <p className="doc-meta mono">
             <span>{doc.categoryLabel}</span>
             <span aria-hidden="true">/</span>

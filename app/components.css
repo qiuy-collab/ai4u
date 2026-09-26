@@ -396,6 +396,8 @@
   }
 
   /* ---------- 列表页 ---------- */
+  /* 列表末行到页脚之间留出呼吸，避免直接贴死（与阅读页 padding-bottom 同一节奏） */
+  .docs-index { padding-bottom: var(--section-tight); }
   .docs-head { padding-top: calc(var(--nav-h) + var(--section-tight)); }
   .docs-head__title { margin-top: var(--space-s); font-size: var(--text-h2); font-weight: 900; }
   .docs-head__sub { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.9; }
@@ -431,15 +433,21 @@
   .docs-empty__body { margin-top: var(--space-xs); color: var(--text-muted); }
 
   /* ---------- 阅读页 ---------- */
-  .prompt-page { padding-top: calc(var(--nav-h) + var(--section-tight)); }
+  .prompt-page { padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: var(--section-tight); }
   .prompt-page .doc-body pre { white-space: pre-wrap; }
-  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); }
-  .doc-main { min-width: 0; max-width: 68ch; margin-inline: auto; }
-  .doc-meta { display: flex; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
+  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: var(--section-tight); }
+  /* 正文列限宽：中文正文用 ch 会偏窄（68ch ≈ 638px ≈ 34 汉字/行），改用 rem 对齐中文阅读宽度 */
+  .doc-main { min-width: 0; max-width: 48rem; margin-inline: auto; }
+  .doc-back { display: inline-flex; align-items: center; gap: 0.4em; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); text-decoration: none; min-height: 44px; margin-bottom: var(--space-2xs); }
+  @media (hover: hover) and (pointer: fine) {
+    .doc-back:hover { color: var(--accent-deep); }
+  }
+  /* meta 行可换行：日期等字段较长时不再把「教程」压成单字竖排 */
+  .doc-meta { display: flex; flex-wrap: wrap; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
   .doc-title { margin-top: var(--space-s); font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.5rem); font-weight: 900; line-height: 1.2; }
   .doc-summary { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.75; }
   /* 正文节奏：小 gap 保持段间紧凑，heading 上方拉开形成分节呼吸 */
-  .doc-body { margin-top: var(--space-l); display: grid; gap: 0.625rem; max-width: 68ch; }
+  .doc-body { margin-top: var(--space-l); display: grid; gap: 0.625rem; max-width: 48rem; }
   .doc-body > h2:first-child, .doc-body > h3:first-child { margin-top: 0; }
   .doc-body h2 { font-size: var(--text-h3); font-weight: 700; margin-top: var(--space-l); margin-bottom: 0.25rem; }
   .doc-body h3 { font-size: 1.1875rem; font-weight: 700; margin-top: var(--space-m); margin-bottom: 0.125rem; }
@@ -644,7 +652,8 @@
   .site-footer__link { color: var(--paper-0); }
   @media (hover: hover) and (pointer: fine) { .site-footer__link:hover { color: var(--hl-0); text-decoration: none; } }
 
-  .doc-title { max-width: 18ch; line-height: 1.25; }
+  /* 标题不再限宽：18ch 在 40px 字号下仅 444px，中文长标题会被折成每行 9 字的「竖排」观感 */
+  .doc-title { line-height: 1.25; }
   .doc-note { border-left: 0; background: color-mix(in oklab, var(--highlight) 22%, transparent); }
   .doc-progress { top: var(--nav-h); height: 3px; }
 
