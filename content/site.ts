@@ -14,7 +14,7 @@ export const SITE = {
 /* 右上角导航 — 只留两个入口 */
 export const NAV = [
   { label: "文档", href: "/docs" },
-  { label: "join us", href: "/#join" },
+  { label: "Join us", href: "/#join" },
 ] as const;
 
 export const HERO = {
@@ -40,7 +40,7 @@ export const FOOTER = {
   nav: [
     { label: "首页", href: "/" },
     { label: "内容", href: "/docs" },
-    { label: "加入", href: "/#join" },
+    { label: "Join us", href: "/#join" },
   ],
   contact: "联系 AI4U",
   maintainer: "AI4U",

@@ -46,14 +46,14 @@ export default function JoinCard() {
               aria-live="polite"
             >
               <span className="btn__label">
-                {state === "copied"
-                  ? ACT_JOIN.copiedLabel
-                  : state === "manual"
-                    ? "请复制"
-                    : ACT_JOIN.copyLabel}
+                {state === "copied" ? ACT_JOIN.copiedLabel : ACT_JOIN.copyLabel}
               </span>
             </button>
-            {state === "manual" && <p className="join-card__hint mono">请复制</p>}
+            {state === "manual" && (
+              <p className="join-card__hint mono" role="status">
+                一键复制没成，群号在上面，手动复制就行
+              </p>
+            )}
           </div>
         )}
         {!hasGroup && <p className="join-card__hint mono">{SITE.join.note}</p>}
