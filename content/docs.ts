@@ -6,6 +6,7 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
+import rehypeHighlight from "rehype-highlight";
 import rehypeStringify from "rehype-stringify";
 
 /**
@@ -82,6 +83,31 @@ function rehypeCallouts() {
   };
 }
 
+/**
+ * 给 <pre> 标注语言（从 <code class="language-xxx"> 提取到 pre[data-lang]），
+ * 供 CSS 在代码块角上渲染语言标签；必须跑在 rehype-highlight 之前，
+ * 因为高亮会往 code 上追加 hljs 类。
+ */
+function rehypeCodeLang() {
+  return (tree: HastNode) => {
+    const walk = (node: HastNode) => {
+      if (node.type === "element" && node.tagName === "pre") {
+        const code = (node.children ?? []).find(
+          (c) => c.type === "element" && c.tagName === "code"
+        );
+        const cls = code?.properties?.className;
+        const list = Array.isArray(cls) ? cls.map(String) : typeof cls === "string" ? [cls] : [];
+        const hit = list.find((c) => c.startsWith("language-"));
+        if (hit) {
+          node.properties = { ...node.properties, "data-lang": hit.slice("language-".length) };
+        }
+      }
+      for (const child of node.children ?? []) walk(child);
+    };
+    walk(tree);
+  };
+}
+
 /** 从编译后的 HTML 提取 h2 目录（id 与 rehype-slug 产出天然一致） */
 function extractToc(html: string): TocItem[] {
   const toc: TocItem[] = [];
@@ -116,6 +142,8 @@ function compileDoc(slug: string, raw: string): { doc: Doc; order: number } {
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeCallouts)
+    .use(rehypeCodeLang)
+    .use(rehypeHighlight, { detect: false, ignoreMissing: true })
     .use(rehypeSlug)
     .use(rehypeStringify, { allowDangerousHtml: true })
     .processSync(content);
