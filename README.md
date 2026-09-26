@@ -9,7 +9,7 @@
 </p>
 
 <p style="font-size:.9em;color:#8a867e;margin:0 0 18px;">
-  一伙人自己在维护的 AI 交流社区 · 不卖课 · 不画饼
+  一伙人自己在维护的 AI 交流社区
 </p>
 
 <p align="center">
