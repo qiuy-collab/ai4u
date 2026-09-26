@@ -98,6 +98,17 @@ function applyBasePath(html: string): string {
   return html.replace(/(src|href)="\/((?!\/)[^"]*)"/g, `$1="${base}/$2"`);
 }
 
+/**
+ * frontmatter 的 `date: 2026-09-26` 会被 YAML 解析成 Date 对象，直接 String() 会渲染出
+ * "Sat Sep 26 2026 08:00:00 GMT+0800 (中国标准时间)" 这种完整 ISO 串（构建机时区不同还会差一天）。
+ * 统一格式化为 YYYY-MM-DD；取 UTC 值，保证本地构建与 UTC 的 CI 构建结果一致。
+ * 非 Date 值（空串 / "[待定]" 这类占位）原样保留。
+ */
+function formatDate(value: unknown): string {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  return String(value ?? "");
+}
+
 function compileDoc(slug: string, raw: string): { doc: Doc; order: number } {
   const { data, content } = matter(raw);
   const file = unified()
@@ -116,7 +127,7 @@ function compileDoc(slug: string, raw: string): { doc: Doc; order: number } {
     category,
     categoryLabel: CATEGORY_LABEL[category],
     title: String(data.title ?? slug),
-    date: String(data.date ?? ""),
+    date: formatDate(data.date),
     minutes: Number(data.minutes ?? 0),
     summary: String(data.summary ?? ""),
     html,
