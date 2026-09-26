@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   description: "把 AI 用成日常。",
   // 品牌图为 public/ 静态文件（node scripts/generate-assets.mjs 生成）。
-  // icons 用完整 URL：Pages 站点在 /ai4u/ 子路径下，根绝对路径会 404；
+  // icons 用完整 URL：Pages 站点在 /AI4U/ 子路径下，根绝对路径会 404；
   // SITE.url 本地是 localhost、CI 是 Pages 地址，双模式各自正确
   icons: {
     icon: `${SITE.url}/icon.png`,

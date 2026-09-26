@@ -14,7 +14,7 @@ import rehypeStringify from "rehype-stringify";
  * - frontmatter: title / category / date(""=未定稿不渲染) / minutes / summary / order
  * - 正文 markdown：`> [!NOTE] xxx` 渲染为 <aside class="doc-note">，普通 `>` 引用渲染为
  *   <blockquote class="doc-quote">；图片放 public/images/docs/<slug>/，md 里写 /images/... 绝对路径，
- *   GITHUB_PAGES 构建时自动加 /ai4u 前缀。
+ *   GITHUB_PAGES 构建时自动加 /AI4U 前缀。
  * 改 md 后：dev 需重启（模块顶层只执行一次），生产走完整 build 无影响。
  */
 
@@ -93,7 +93,7 @@ function extractToc(html: string): TocItem[] {
 
 /** md 里的站内绝对路径在 GitHub Pages 构建下补 basePath（静态导出不改写裸 <img src>） */
 function applyBasePath(html: string): string {
-  const base = process.env.GITHUB_PAGES === "true" ? "/ai4u" : "";
+  const base = process.env.GITHUB_PAGES === "true" ? "/AI4U" : "";
   if (!base) return html;
   return html.replace(/(src|href)="\/((?!\/)[^"]*)"/g, `$1="${base}/$2"`);
 }

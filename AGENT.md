@@ -36,10 +36,10 @@ AI4U（AI for You）——学生自组织的 AI 交流社区官网。**面向大
 content/site.ts        全站文案数据 + 待补事实（改文案先来这里）
 content/docs/*.md      教程文档源文件（frontmatter + markdown，见下方「新增教程」）
 content/docs.ts        md loader：构建时读取 content/docs/*.md 编译为 HTML（保持 DOCS/getDoc/getAdjacent 导出）
-app/               路由：layout / page(首页) / docs / docs/[slug] / not-found / opengraph-image
+app/               路由：layout / page(首页) / docs / docs/[slug] / prompt/[slug] / not-found
 app/globals.css    token 层 + @layer 顺序 + 动效 token
 components/ui/     可复用组件（nav / footer / JoinCard / PromptLine…）
-components/sections/  首页各幕（ActWhat / ActDoing / ActStart / ActJoin）
+components/sections/  首页各幕（Hero / ActWhat / ActJoin）
 scripts/probe.mjs  验收 probe：溢出 / reduced-motion 可见性 / h1 / lang 扫描
 ```
 
@@ -60,7 +60,7 @@ order: 4             # 列表页与上/下一篇的排序号
 正文 markdown（支持 GFM：列表/表格/删除线）。两个约定：
 - 提示块写 `> [!NOTE] xxx` → 渲染为高亮 aside；金句/引用直接 `> xxx` → 渲染为大字引用
 - 图片放 `public/images/docs/<slug>/`，md 里写 `/images/docs/<slug>/x.png`；
-  GitHub Pages 构建会自动补 `/ai4u` 前缀，本地不用写
+  GitHub Pages 构建会自动补 `/AI4U` 前缀，本地不用写
 ```
 
 改 md 后：本地 dev 需**重启**（loader 在模块顶层只执行一次）；生产 push 后 CI 全新构建无影响。
@@ -84,20 +84,21 @@ node scripts/probe.mjs   # 验收 probe（BASE_URL 默认 3111，用系统 Edge�
 
 ## 部署
 
-GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` → CI 以 `GITHUB_PAGES=true` 构建（此时启用 `output: 'export'` + `basePath: /ai4u`，本地构建不受影响）→ 部署到 `https://qiuy-collab.github.io/ai4u/`。
+GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` → CI 以 `GITHUB_PAGES=true` 构建（此时启用 `output: 'export'` + `basePath: /AI4U`，本地构建不受影响）→ 部署到 `https://qiuy-collab.github.io/AI4U/`。
 
-## 待补事实（上线前）
+**注意**：GitHub Pages 的项目路径**大小写敏感**，`basePath` 必须与仓库名逐字一致。仓库名从 `ai4u` 改为 `AI4U` 时，`next.config.ts` 的 `basePath`、`content/docs.ts` 的 `applyBasePath`、`content/site.ts` 的 `SITE.url` 三处必须同步改，否则全站资源 404。
+
+## 待补事实
 
 在 `content/site.ts`：
 
 | 字段 | 现状 | 补什么 |
 |---|---|---|
-| `SITE.url` | `https://qiuy-collab.github.io/ai4u` | 已指向 Pages；换正式域名时改这里（影响 OG / canonical / sitemap） |
-| `SITE.join.groupNumber` | 空串 | 真实 QQ 群号（补上后复制按钮自动出现） |
-| `ACT_DOING.timeline[*].date` | 空串 | 活动真实日期（补上后日期行自动渲染） |
+| `SITE.url` | `https://qiuy-collab.github.io/AI4U` | 已指向 Pages；换正式域名时改这里（影响 OG / canonical / sitemap） |
+| `SITE.join.qr` | `public/wechat-group-qr.png` | 微信群二维码（**有有效期**，换群或过期时替换这张图） |
 
-另有：真二维码图替换 join 卡占位框（`components/ui/JoinCard.tsx`）。品牌图（favicon / apple-icon / OG 卡）是 `public/` 静态文件，由 `node scripts/generate-assets.mjs` 生成，改设计后重跑脚本，不要再建 ImageResponse route（静态导出下产物为空目录，线上会 404）。
+品牌图（favicon / apple-icon / OG 卡）是 `public/` 静态文件，由 `node scripts/generate-assets.mjs` 生成，改设计后重跑脚本，不要再建 ImageResponse route（静态导出下产物为空目录，线上会 404）。
 
 换正式域名后，另需在 `app/layout.tsx` 补 `alternates.canonical`（`SITE.url` 已指向 Pages 地址，OG / sitemap 随之生效）。
 
-> README 是给访客看的门面（顶部图片与徽章引用 `public/` 下的现成资产）；开发与维护说明全部在本文件。补上群号后，README「加入我们」那段的「进群方式近期更新」要同步改掉。
+> README 是给访客看的门面（顶部图片与徽章引用 `public/` 下的现成资产）；开发与维护说明全部在本文件。微信群二维码同时贴在 README「加入我们」那一段与首页加入卡片上，换群时两处一起换。

@@ -2,17 +2,17 @@ export const SITE = {
   name: "AI4U",
   nameLong: "AI4U · AI for You",
   tagline: "把 AI 用成日常",
-  url: "https://qiuy-collab.github.io/ai4u", // GitHub Pages 地址；换正式域名时改这里
+  url: "https://qiuy-collab.github.io/AI4U", // GitHub Pages 地址；换正式域名时改这里
   join: {
-    groupLabel: "加入 AI4U",
-    groupNumber: "", // 真实群号补上前保持空字符串——JoinCard 按空值降级：不渲染复制按钮，不假装可复制
-    placeholderLabel: "QQ 群",
-    note: "进群方式近期更新",
+    groupLabel: "微信群",
+    hint: "扫码进群，和我们一起聊 AI",
+    qr: "/wechat-group-qr.png", // 组件层路径，Pages 构建下由 NEXT_PUBLIC_ASSET_PREFIX 补前缀
+    qrAlt: "AI4U 微信群二维码",
   },
 } as const;
 
 /* 站点仓库地址 — 导航栏 GitHub 图标入口 */
-export const REPO = "https://github.com/qiuy-collab/ai4u";
+export const REPO = "https://github.com/qiuy-collab/AI4U";
 
 /* 右上角导航 — 只留两个入口 */
 export const NAV = [
@@ -34,8 +34,6 @@ export const ACT_WHAT = {
 export const ACT_JOIN = {
   prompt: "怎么加入？",
   mega: "Join|us",
-  copyLabel: "复制群号",
-  copiedLabel: "已复制",
 } as const;
 
 export const FOOTER = {
