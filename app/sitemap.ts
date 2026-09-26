@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/content/site";
 import { DOCS } from "@/content/docs";
+import { PROMPTS } from "@/content/prompts";
 
 // 静态导出（GitHub Pages）必需：声明此 route 为纯静态
 export const dynamic = "force-static";
@@ -14,6 +15,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${base}/docs/${d.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    })),
+    ...PROMPTS.map((p) => ({
+      url: `${base}/prompt/${p.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
     })),
   ];
 }
