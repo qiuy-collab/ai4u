@@ -17,7 +17,6 @@ export default function SiteNav() {
           {NAV.map((item) => (
             <li key={item.href}>
               <Link href={item.href} className="site-nav__link">
-                <span className="site-nav__enter" aria-hidden="true">↵ </span>
                 {item.label}
               </Link>
             </li>

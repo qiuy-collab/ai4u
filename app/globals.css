@@ -67,7 +67,6 @@
 
   --font-body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
   --font-display: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
-  --font-latin-serif: Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
 
   --radius: 0;
@@ -110,7 +109,6 @@
   .measure { max-width: 68ch; }
   .measure-narrow { max-width: 44ch; }
   .mono { font-family: var(--font-mono); }
-  .serif-latin { font-family: var(--font-latin-serif); }
   .display {
     font-family: var(--font-display);
     font-weight: 900;
