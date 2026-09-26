@@ -464,6 +464,8 @@
   .docs-empty__body { margin-top: var(--space-xs); color: var(--text-muted); }
 
   /* ---------- 阅读页 ---------- */
+  .prompt-page { padding-top: calc(var(--nav-h) + var(--section-tight)); }
+  .prompt-page .doc-body pre { white-space: pre-wrap; }
   .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); }
   .doc-main { min-width: 0; max-width: 68ch; margin-inline: auto; }
   .doc-meta { display: flex; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
