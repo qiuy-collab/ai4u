@@ -277,14 +277,14 @@
     margin-top: var(--space-l);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    color: var(--accent);
+    color: var(--accent-deep);
     text-decoration: none;
-    border-bottom: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent-deep);
     padding-bottom: 0.2em;
     min-height: 44px;
   }
   @media (hover: hover) and (pointer: fine) {
-    .act-start__more:hover { color: var(--accent-hover); border-color: var(--accent-hover); }
+    .act-start__more:hover { color: var(--accent-deep-hover); border-color: var(--accent-deep-hover); }
   }
 
   /* ---------- index-row（首页 Act3 + 列表页共用） ---------- */
@@ -392,13 +392,13 @@
     line-height: 1;
     border: 1px solid transparent;
     border-radius: var(--radius);
-    background: var(--accent);
+    background: var(--accent-deep);
     color: var(--accent-on);
     cursor: pointer;
     transition: background-color var(--dur-fast) var(--ease-out-expo), transform 90ms var(--ease-out-expo);
   }
   @media (hover: hover) and (pointer: fine) {
-    .btn--primary:hover { background: var(--accent-hover); }
+    .btn--primary:hover { background: var(--accent-deep-hover); }
   }
   .btn:active { transform: scale(0.98); }
   .btn[disabled] { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
@@ -508,7 +508,7 @@
   .doc-body th { background: var(--bg-sunk); font-weight: 700; }
   .doc-body strong { font-weight: 700; }
   .doc-adjacent { margin-top: var(--space-xl); display: flex; justify-content: space-between; gap: var(--space-s); border-top: 1px solid var(--border); padding-top: var(--space-m); }
-  .doc-adjacent a { text-decoration: none; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--accent); min-height: 44px; display: inline-flex; align-items: center; }
+  .doc-adjacent a { text-decoration: none; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--accent-deep); min-height: 44px; display: inline-flex; align-items: center; }
   @media (hover: hover) and (pointer: fine) {
     .doc-adjacent a:hover { text-decoration: underline; }
   }
@@ -539,7 +539,7 @@
   .doc-toc a { color: var(--text-muted); text-decoration: none; display: block; padding-block: 0.2em; }
   @supports (scroll-target-group: auto) {
     .doc-toc ul { scroll-target-group: auto; }
-    .doc-toc a:target-current { color: var(--accent); font-weight: 700; }
+    .doc-toc a:target-current { color: var(--accent-deep); font-weight: 700; }
   }
   @media (hover: hover) and (pointer: fine) {
     .doc-toc a:hover { color: var(--text); }
@@ -666,7 +666,7 @@
   }
   .join-card__qr { background: rgba(21, 21, 21, 0.04); }
   .btn { border-radius: var(--radius-sm); background: var(--ink-0); color: var(--paper-0); font-weight: 700; }
-  @media (hover: hover) and (pointer: fine) { .btn--primary:hover { background: var(--accent-hover); } }
+  @media (hover: hover) and (pointer: fine) { .btn--primary:hover { background: var(--accent-deep-hover); } }
 
   .site-footer { background: var(--ink-0); color: var(--paper-0); }
   .site-footer__logo { font-weight: 800; letter-spacing: 0.08em; }

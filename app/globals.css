@@ -60,7 +60,8 @@
   --text: var(--ink-0);
   --text-muted: var(--ink-1);
   --accent: var(--ember-0);
-  --accent-hover: var(--ember-1);
+  --accent-deep: #b4441e;
+  --accent-deep-hover: #a83f1c;
   --accent-on: var(--paper-0);
   --highlight: var(--hl-0);
   --focus: var(--ember-0);
