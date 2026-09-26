@@ -154,9 +154,14 @@
   @media (prefers-reduced-motion: reduce) {
     .hl { transition: none; background-size: 100% 78%; }
   }
+  /* fill-mode 必须 backwards 而非 both：CSS 动画的插值域里 none≡identity 矩阵，
+     fill 阶段（含 to:none）的 computed transform 永远 ≠ none → .page-enter 会永久成为
+     fixed 子孙的 containing block，页面内 fixed（doc-progress、移动端 TOC 悬浮钮）全部失效。
+     backwards 在结束后不保留动画值 → 回到自然态 transform:none，containing block 解除；
+     to 态与自然态视觉完全一致，无跳变。 */
   @keyframes page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   @media (prefers-reduced-motion: no-preference) {
-    .page-enter { animation: page-in 420ms var(--ease-out-expo) both; }
+    .page-enter { animation: page-in 420ms var(--ease-out-expo) backwards; }
   }
 }
 

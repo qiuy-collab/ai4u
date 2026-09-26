@@ -70,7 +70,8 @@
   .hero__title { margin-top: var(--space-s); }
   .hero__line { display: block; }
   .hero__word { display: inline-block; }
-  .hero__caret { margin-left: 0.1em; }
+  /* 0.04em：390 视口下「把 AI 用成日常」已近占满内容列，光标 margin 过大仍会换行 */
+  .hero__caret { margin-left: 0.04em; }
   .hero__hint {
     position: absolute;
     bottom: var(--space-l);
@@ -97,12 +98,16 @@
      JS 禁用 / reduced-motion 时文字直接完整可见 */
   @media (prefers-reduced-motion: no-preference) {
     .hero__word {
-      animation: hero-type 0.5s var(--ease-out-expo) both;
+      /* backwards 而非 both：delay 期间保 from 态（词隐藏），结束后回自然态
+         （transform:none，不残留 containing block）；to 与自然态一致，无跳变 */
+      animation: hero-type 0.5s var(--ease-out-expo) backwards;
       animation-delay: calc(var(--wi) * 90ms + 150ms);
     }
     @keyframes hero-type {
       from { opacity: 0; transform: translateY(0.35em); }
-      to { opacity: 1; transform: translateY(0); }
+      /* to 用 none 而非 translateY(0)：fill both 会永久保留结束态，
+         非 none 的 transform 会把元素变成 fixed 子孙的 containing block（同 page-in 教训） */
+      to { opacity: 1; transform: none; }
     }
   .hero__hint {
       animation: hero-fade 0.6s var(--ease-out-expo) 0.9s both;
@@ -873,7 +878,9 @@
     background: linear-gradient(90deg, rgba(17, 18, 20, 0.96), rgba(17, 18, 20, 0.72) 58%, rgba(17, 18, 20, 0.38));
   }
   .hero__prompt { color: rgba(242, 239, 232, 0.62); }
-  .hero__title { margin-top: var(--space-m); max-width: 10ch; color: var(--paper-0); }
+  /* max-width:10ch 已删——ch 对中文是陷阱（1ch≈0.5em），display 字号下 10ch 恰好卡满
+     一行字宽，行尾光标放不下被挤到第二行（与 .doc-title 的 18ch 竖排同款问题） */
+  .hero__title { margin-top: var(--space-m); color: var(--paper-0); }
   .hero__hint { color: rgba(242, 239, 232, 0.6); }
 
   /* act-what 大字入场 + 水彩晕染洇动：均 view() scrub，from 态只在 keyframes；

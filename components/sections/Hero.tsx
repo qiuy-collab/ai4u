@@ -18,20 +18,21 @@ export default function Hero() {
       <h1 id="hero-title" className="display hero__title">
         {LINES.map((line, li) => (
           <span className="hero__line" key={li}>
-            {line.map((w) => (
+            {line.map((w, idx) => (
               <span
                 className="hero__word"
                 key={wi}
                 style={{ "--wi": wi++ } as CSSProperties}
               >
                 {w}
+                {/* 光标放词内文本流末尾：窄屏词内折行时自动跟在最后一字后，
+                    不会像「词的兄弟节点」那样被占满整行的词挤到下一行 */}
+                {li === LINES.length - 1 && idx === line.length - 1 && (
+                  <span className="caret caret--blink hero__caret" aria-hidden="true" />
+                )}
               </span>
             ))}
             {li < LINES.length - 1 && <br />}
-            {/* 光标 inline 跟在末行词后：放 h1 尾部会被块级 line 挤到独立一行 */}
-            {li === LINES.length - 1 && (
-              <span className="caret caret--blink hero__caret" aria-hidden="true" />
-            )}
           </span>
         ))}
       </h1>
