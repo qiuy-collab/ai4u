@@ -180,30 +180,34 @@
     border-radius: 55% 45% 62% 38% / 44% 56% 44% 56%;
   }
 
-  /* 短语跑马灯：破 gutter 通铺的墨带，两组相同短语无缝循环。
-     弧形排布：词沿正弦波起伏（8 词一整波 → 组间循环无缝）+ 切向微转，
-     幅度用 em 随字号缩放；z 序压过 mega 晕染（wash--2 纵向下探不叠上墨带）。
-     reduce / JS 禁用：轨道静止，第一组完整可读（波浪形态保留，无 from 态依赖） */
+  /* 拱形跑马灯：词链沿一条固定 ∩ 弧循环滑动（offset-path + offset-distance），
+     offset-rotate: auto 让词贴弧切向自转——轨道（弧）静止、词沿轨流动。
+     黑带移除：实体弧带与词弧无法在纯 CSS 下对齐，词列自身成拱更干净。
+     path 固定 1440 逻辑坐标系，group 用 left 居中适配任意容器宽；
+     两端出界点在容器外，100%→0% 的相位回绕发生在界外 = 视觉无缝。
+     reduce / 动画禁用：词落在均匀静态位（--arc-d），拱形构图完整可读，无 from 态依赖 */
   .marquee {
     position: relative;
     z-index: 1;
     margin-top: var(--space-xl);
     margin-inline: calc(-1 * clamp(1.25rem, 5vw, 6rem));
-    overflow: hidden;
-    background: var(--ink-0);
-    color: var(--paper-0);
+    height: clamp(240px, 24vw, 320px);
+    overflow: clip;
   }
-  .marquee__track { display: flex; width: max-content; }
   .marquee__group {
-    display: flex;
-    align-items: center;
-    gap: var(--space-l);
-    list-style: none;
+    position: relative;
+    height: 100%;
     margin: 0;
-    /* 上下各加一整个波幅的余量，弧形起伏不被 overflow hidden 裁掉 */
-    padding: calc(var(--space-m) + 0.8em) var(--space-l) calc(var(--space-m) + 0.8em) 0;
+    padding: 0;
+    list-style: none;
+    /* 把 1440 宽的 path 坐标系居中到任意容器宽（大屏不偏左） */
+    left: calc(50% - 720px);
+    --arc-path: path("M 1840 300 C 1200 56 240 56 -400 300");
   }
   .marquee__item {
+    position: absolute;
+    left: 0;
+    top: 0;
     display: flex;
     align-items: center;
     gap: var(--space-l);
@@ -211,21 +215,58 @@
     font-weight: 900;
     letter-spacing: 0.02em;
     white-space: nowrap;
-    transform: translateY(var(--my, 0)) rotate(var(--mr, 0deg));
+    color: var(--ink-0);
+    offset-path: var(--arc-path);
+    /* path 走向为右→左（词向左流），+180deg 把词头转回可读方向、仅保留切向倾斜 */
+    offset-rotate: auto 180deg;
+    offset-distance: var(--arc-d, 0%);
   }
-  /* 正弦波 8 相位：一个完整周期跨 8 词（my = -sin·0.6em，mr = 切向 ±3deg） */
-  .marquee__item:nth-child(8n + 1) { --my: 0; --mr: -3deg; }
-  .marquee__item:nth-child(8n + 2) { --my: -0.42em; --mr: -2.1deg; }
-  .marquee__item:nth-child(8n + 3) { --my: -0.6em; --mr: 0deg; }
-  .marquee__item:nth-child(8n + 4) { --my: -0.42em; --mr: 2.1deg; }
-  .marquee__item:nth-child(8n + 5) { --my: 0; --mr: 3deg; }
-  .marquee__item:nth-child(8n + 6) { --my: 0.42em; --mr: 2.1deg; }
-  .marquee__item:nth-child(8n + 7) { --my: 0.6em; --mr: 0deg; }
-  .marquee__item:nth-child(8n + 8) { --my: 0.42em; --mr: -2.1deg; }
+  /* 静态位：8 词均匀铺满弧（rm / 无动画时的构图终态） */
+  .marquee__item:nth-child(1) { --arc-d: 0%; }
+  .marquee__item:nth-child(2) { --arc-d: 12.5%; }
+  .marquee__item:nth-child(3) { --arc-d: 25%; }
+  .marquee__item:nth-child(4) { --arc-d: 37.5%; }
+  .marquee__item:nth-child(5) { --arc-d: 50%; }
+  .marquee__item:nth-child(6) { --arc-d: 62.5%; }
+  .marquee__item:nth-child(7) { --arc-d: 75%; }
+  .marquee__item:nth-child(8) { --arc-d: 87.5%; }
   .marquee__x { color: var(--accent); font-size: var(--text-sm); }
   @media (prefers-reduced-motion: no-preference) {
-    .marquee__track { animation: marquee-move 16s linear infinite; }
-    @keyframes marquee-move { to { transform: translateX(-50%); } }
+    .marquee__item { animation: arc-run 26s linear infinite; }
+    /* 动态相位：delay 按词宽占比分配（含 ✕ 前缀），词距沿弧均匀、首尾相接铺满整条弧 */
+    .marquee__item:nth-child(1) { animation-delay: 0s; }
+    .marquee__item:nth-child(2) { animation-delay: -3s; }
+    .marquee__item:nth-child(3) { animation-delay: -6.4s; }
+    .marquee__item:nth-child(4) { animation-delay: -9.7s; }
+    .marquee__item:nth-child(5) { animation-delay: -12.5s; }
+    .marquee__item:nth-child(6) { animation-delay: -15.5s; }
+    .marquee__item:nth-child(7) { animation-delay: -19.8s; }
+    .marquee__item:nth-child(8) { animation-delay: -22.4s; }
+    /* 悬停暂停：词停弧上可读可点 */
+    .marquee:hover .marquee__item { animation-play-state: paused; }
+    @keyframes arc-run {
+      from { offset-distance: 0%; }
+      to { offset-distance: 100%; }
+    }
+  }
+  @media (max-width: 720px) {
+    /* 窄屏：390 逻辑坐标系（中点对准视口中心），容器高度同步收窄 */
+    .marquee { height: 240px; }
+    .marquee__group { left: calc(50% - 195px); --arc-path: path("M 540 240 C 380 50 10 50 -150 240"); }
+  }
+  /* 回退：不支持 motion-path 的旧浏览器 → 静态一行词 */
+  @supports not (offset-path: path("M 0 0")) {
+    .marquee { height: auto; }
+    .marquee__group {
+      left: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-s) var(--space-l);
+      padding: var(--space-m) 0;
+    }
+    .marquee__item { position: static; }
   }
 
   /* mono 小链接：ActStart 旧 CTA 样式，现由 404 页「回到首页」复用，勿删 */
@@ -315,6 +356,17 @@
   }
   .join-card__actions { margin-top: var(--space-m); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
   .join-card__hint { font-size: var(--text-xs); color: var(--text-muted); }
+  /* 悬停手感：卡体轻抬 + 边框 ember 呼应（与全站 hover 范式一致） */
+  @media (hover: hover) and (pointer: fine) {
+    .join-card {
+      transition: transform var(--dur-m, 0.25s) ease, border-color var(--dur-m, 0.25s) ease, box-shadow var(--dur-m, 0.25s) ease;
+    }
+    .join-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 28px rgba(21, 21, 21, 0.1);
+    }
+  }
   .join-card__qr {
     width: 148px;
     height: 148px;
@@ -503,7 +555,6 @@
 
   /* ---------- 移动端（390 基本可用：重动效简化） ---------- */
   @media (max-width: 780px) {
-    .marquee__group { gap: var(--space-m); padding: var(--space-s) var(--space-m) var(--space-s) 0; }
     .marquee__item { gap: var(--space-m); font-size: 1.25rem; }
     .index-row__link { grid-template-columns: 1.6rem 1fr auto; }
     .index-row__cat { display: none; }
