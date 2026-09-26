@@ -18,6 +18,18 @@ AI4U（AI for You）——学生自组织的 AI 交流社区官网。**面向大
 5. **样式层级**：`app/globals.css` 是三级 token 层（primitive → semantic → component），组件 CSS 只准读 semantic 层。`@layer` 顺序 `base < components < motion < overrides`——覆盖 motion 层的规则必须放 `overrides`（历史上两次因放错层导致覆盖失效）。
 6. **暗色模式明确不做**：纸白身份是设计核心，`color-scheme: light`，别加 dark 分支。
 
+## 动效实现清单（改前先对照，别引入动画库）
+
+| 效果 | 机制 | reduced-motion 下 |
+|---|---|---|
+| hero 逐词键入 | CSS keyframes（`from` 态只写在 keyframes 里） | delay 清零 → 直接终态 |
+| hero 命令行打字（打完熄灭） | IntersectionObserver + 逐字（tick 内复查 reduce） | 直接显示全文，无光标 |
+| 教程索引逐行浮现 | CSS `animation-timeline: view()` scrub | 无动画 → 完整终态 |
+| 荧光笔划过 | background-size transition | 立即全高亮 |
+| 时间线生长 / 节点点亮 | CSS `animation-timeline: view()` | 无动画 → 完整终态 |
+| 阅读进度条 | CSS `animation-timeline: scroll()` | 保留（输入映射，非自主运动） |
+| 目录高亮 | CSS `scroll-target-group` | 保留（状态指示） |
+
 ## 目录
 
 ```
@@ -85,3 +97,7 @@ GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` →
 | `ACT_DOING.timeline[*].date` | 空串 | 活动真实日期（补上后日期行自动渲染） |
 
 另有：真二维码图替换 join 卡占位框（`components/ui/JoinCard.tsx`）。品牌图（favicon / apple-icon / OG 卡）是 `public/` 静态文件，由 `node scripts/generate-assets.mjs` 生成，改设计后重跑脚本，不要再建 ImageResponse route（静态导出下产物为空目录，线上会 404）。
+
+换正式域名后，另需在 `app/layout.tsx` 补 `alternates.canonical`（`SITE.url` 已指向 Pages 地址，OG / sitemap 随之生效）。
+
+> README 是给访客看的门面（顶部图片与徽章引用 `public/` 下的现成资产）；开发与维护说明全部在本文件。补上群号后，README「加入我们」那段的「进群方式近期更新」要同步改掉。
