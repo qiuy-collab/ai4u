@@ -73,7 +73,7 @@ const og = new ImageResponse(
       e(
         "div",
         { style: { fontSize: 40, color: "#57534a", marginTop: 16 } },
-        "把 AI 用成日常，工具归你",
+        "把 AI 用成日常",
       ),
     ),
     // 底行

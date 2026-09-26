@@ -22,7 +22,7 @@ export const NAV = [
 
 export const HERO = {
   prompt: "想用 AI 做点什么？",
-  titleLines: ["把 AI 用成日常", "工具归你"],
+  titleLines: ["把 AI 用成日常"],
   scrollHint: "scroll ↓",
 } as const;
 

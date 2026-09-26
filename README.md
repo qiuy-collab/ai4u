@@ -2,10 +2,10 @@
 
 <img src="public/apple-icon.png" alt="AI4U" width="96">
 
-<img src="public/og.png" alt="AI4U · AI for You —— 把 AI 用成日常，工具归你" width="100%">
+<img src="public/og.png" alt="AI4U · AI for You —— 把 AI 用成日常" width="100%">
 
 <p style="font-size:1.1em;color:#625f58;margin:20px 0 2px;">
-  把 AI 用成日常，工具归你
+  把 AI 用成日常
 </p>
 
 <p style="font-size:.9em;color:#8a867e;margin:0 0 18px;">
