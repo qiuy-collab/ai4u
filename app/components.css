@@ -725,7 +725,8 @@
     @keyframes doc-progress-grow { to { scale: 1 1; } }
   }
 
-  /* 目录：滚动高亮（scroll-target-group，Firefox 退化 = 无高亮，目录仍可用） */
+  /* 目录：当前章节高亮由 TocSpy（components/ui/TocSpy.tsx）以 aria-current 标记唯一一项；
+     无 JS 环境（含 Firefox）无高亮，目录仍可用。勿用 scroll-target-group——相交即高亮，会出现多个选中态 */
   .doc-toc { position: sticky; top: calc(var(--nav-h) + var(--space-l)); align-self: start; font-size: var(--text-sm); }
   .doc-toc__label { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.12em; color: var(--text-muted); }
   .doc-toc nav { margin-top: var(--space-s); }
@@ -734,10 +735,7 @@
   /* H3 子标题：缩进 + 略小字号，归属其 H2 章 */
   .doc-toc ul ul { margin-top: 0.1em; padding-left: 0.85em; border-left: 1px solid var(--border); }
   .doc-toc ul ul a { font-size: var(--text-xs); padding-block: 0.28em; }
-  @supports (scroll-target-group: auto) {
-    .doc-toc ul { scroll-target-group: auto; }
-    .doc-toc a:target-current { color: var(--accent-deep); font-weight: 700; }
-  }
+  .doc-toc a[aria-current="true"] { color: var(--accent-deep); font-weight: 700; }
   @media (hover: hover) and (pointer: fine) {
     .doc-toc a:hover { color: var(--text); }
   }

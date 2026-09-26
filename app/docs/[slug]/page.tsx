@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DOCS, getAdjacent, getDoc } from "@/content/docs";
 import type { TocItem } from "@/content/docs";
 import CodeCopy from "@/components/ui/CodeCopy";
+import TocSpy from "@/components/ui/TocSpy";
 
 /** 两级目录列表（H2 章 + H3 节缩进），桌面侧栏与移动端抽屉共用 */
 function TocList({ items }: { items: TocItem[] }) {
@@ -104,6 +105,8 @@ export default async function DocPage({
           </nav>
         </aside>
       )}
+      {/* 目录当前章节高亮（桌面侧栏，aria-current 唯一激活） */}
+      <TocSpy />
     </div>
   );
 }
