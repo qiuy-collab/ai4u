@@ -195,6 +195,9 @@
     height: clamp(240px, 24vw, 320px);
     overflow: clip;
   }
+  /* 轨道容器：桌面 display:contents 不产生盒，词列布局与无 track 时完全一致；
+     移动端（780 断点）才变成 flex 轨道承载平移动画 */
+  .marquee__track { display: contents; }
   .marquee__group {
     position: relative;
     height: 100%;
@@ -261,33 +264,6 @@
       to { offset-distance: 100%; }
     }
   }
-  @media (max-width: 780px) {
-    /* 窄屏不再走弧：弧长不足时 8 个词（含 Claude Code 这类长词）会挤到重叠，
-       而弧坐标系以 1440 设计，390 宽下横向可见段太窄。改为静态换行排列——
-       居中、不重叠、不需要横滑；rm / 无动画下形态一致。
-       ✕ 用对称 padding 独占词间间距，保证在两词正好居中。 */
-    .marquee { height: auto; overflow: visible; }
-    .marquee__group {
-      left: 0;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-s) 0;
-      padding-block: var(--space-m);
-    }
-    .marquee__item {
-      position: static;
-      offset-path: none;
-      font-size: 1.25rem;
-      --arc-d: 0%;
-    }
-    .marquee__x {
-      position: static;
-      transform: none;
-      padding-inline: calc(var(--space-m) / 2);
-    }
-  }
   /* 回退：不支持 motion-path 的旧浏览器 → 静态一行词 */
   @supports not (offset-path: path("M 0 0")) {
     .marquee { height: auto; }
@@ -301,6 +277,49 @@
       padding: var(--space-m) 0;
     }
     .marquee__item { position: static; }
+  }
+  /* ---------- 移动端跑马灯：直线无缝滚动 ----------
+     放在 @supports not 段之后，保证覆盖上面的回退规则。
+     窄屏不走弧（弧坐标系按 1440 设计，390 下可见弧段太窄、词会挤到重叠），
+     改为水平无限滚动：track 含两组相同词列，translateX(0 → -50%) 循环——
+     两组等宽，回绕点正好落在第二组开头 = 视觉无缝。
+     ✕ 用对称 padding 独占词距，直线布局下正好居中（无弧投影浮动）。
+     rm / 动画禁用：静止显示第一组（第二组被 overflow: clip 裁在界外）。 */
+  @media (max-width: 780px) {
+    .marquee { height: auto; overflow: clip; }
+    .marquee__track {
+      display: flex;
+      width: max-content;
+      padding-block: var(--space-m);
+    }
+    .marquee__group {
+      left: auto;
+      display: flex;
+      flex: none;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      padding: 0;
+    }
+    .marquee__item {
+      position: static;
+      offset-path: none;
+      font-size: 1.25rem;
+      --arc-d: 0%;
+    }
+    .marquee__x {
+      position: static;
+      transform: none;
+      padding-inline: calc(var(--space-m) / 2);
+    }
+  }
+  @media (max-width: 780px) and (prefers-reduced-motion: no-preference) {
+    .marquee__track { animation: mq-run 24s linear infinite; }
+    @keyframes mq-run {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
   }
 
   /* mono 小链接：ActStart 旧 CTA 样式，现由 404 页「回到首页」复用，勿删 */
@@ -430,7 +449,9 @@
   /* ---------- 列表页 ---------- */
   /* 留白口径（2026-09-26 整体压缩一档）：顶部 nav + space-l、底部 space-xl、
      行内间距一律降一级；不再用 section-tight 倍率的宽松节奏，让首屏直接进入内容 */
-  .docs-index { padding-bottom: var(--space-xl); }
+  /* 内容页底部留白：内容与深色 footer 之间要有一段呼吸（64px 的 --space-xl 不够），
+     390 → 72px，1440 → 134px，1920+ → 136px。列表页 / 阅读页 / prompt 页三处一致 */
+  .docs-index { padding-bottom: clamp(4.5rem, 3rem + 6vw, 8.5rem); }
   .docs-head { padding-top: calc(var(--nav-h) + var(--space-l)); }
   .docs-head__title { margin-top: var(--space-xs); font-size: var(--text-h2); font-weight: 900; }
   .docs-head__sub { margin-top: var(--space-xs); color: var(--text-muted); line-height: 1.7; }
@@ -469,12 +490,12 @@
   /* 仅供屏幕阅读器：提示词页输出纯文本，视觉标题由浏览器页签承担，这里保留语义 h1 */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
   /* 留白口径同列表页：压缩一档，首屏更快进入正文 */
-  .prompt-page { padding-top: calc(var(--nav-h) + var(--space-l)); padding-bottom: var(--space-xl); }
+  .prompt-page { padding-top: calc(var(--nav-h) + var(--space-l)); padding-bottom: clamp(4.5rem, 3rem + 6vw, 8.5rem); }
   .prompt-page .doc-body pre { white-space: pre-wrap; }
   /* 提示词页头部的类别行（「部署提示词」）。
      阅读页已按要求不再渲染元信息行，此样式只服务 /prompt/[slug]——不要跟着阅读页一起删。 */
   .doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
-  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-l); padding-top: calc(var(--nav-h) + var(--space-l)); padding-bottom: var(--space-xl); }
+  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-l); padding-top: calc(var(--nav-h) + var(--space-l)); padding-bottom: clamp(4.5rem, 3rem + 6vw, 8.5rem); }
   /* 正文列限宽：中文正文用 ch 会偏窄（68ch ≈ 638px ≈ 34 汉字/行），改用 rem 对齐中文阅读宽度 */
   .doc-main { min-width: 0; max-width: 56rem; margin-inline: auto; }
   .doc-back { display: inline-flex; align-items: center; gap: 0.4em; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); text-decoration: none; min-height: 44px; margin-bottom: var(--space-2xs); }
@@ -710,6 +731,9 @@
   .doc-toc nav { margin-top: var(--space-s); }
   .doc-toc ul { list-style: none; padding: 0; display: grid; gap: var(--space-2xs); }
   .doc-toc a { color: var(--text-muted); text-decoration: none; display: block; padding-block: 0.2em; }
+  /* H3 子标题：缩进 + 略小字号，归属其 H2 章 */
+  .doc-toc ul ul { margin-top: 0.1em; padding-left: 0.85em; border-left: 1px solid var(--border); }
+  .doc-toc ul ul a { font-size: var(--text-xs); padding-block: 0.28em; }
   @supports (scroll-target-group: auto) {
     .doc-toc ul { scroll-target-group: auto; }
     .doc-toc a:target-current { color: var(--accent-deep); font-weight: 700; }
@@ -717,8 +741,9 @@
   @media (hover: hover) and (pointer: fine) {
     .doc-toc a:hover { color: var(--text); }
   }
-  /* 移动端目录抽屉：桌面隐藏（桌面走上面的 sticky 侧栏），
-     移动端在 780 断点里 display:block。details 原生弹出/收起，零客户端 JS */
+  /* 移动端目录悬浮钮：桌面隐藏（桌面走上面的 sticky 侧栏）。
+     details/summary 原生弹出/收起，零客户端 JS；钮 fixed 右下，
+     点开的目录面板 absolute 浮出在其上方（布局在 780 断点里给出） */
   .doc-toc-drawer { display: none; }
   .doc-toc-drawer__label {
     display: flex;
@@ -739,6 +764,9 @@
   .doc-toc-drawer > nav { padding: 0 var(--space-m) var(--space-m); }
   .doc-toc-drawer ul { list-style: none; padding: 0; display: grid; gap: var(--space-2xs); font-size: var(--text-sm); }
   .doc-toc-drawer a { color: var(--text-muted); text-decoration: none; display: block; padding-block: 0.35em; }
+  /* 抽屉/悬浮面板里的 H3 子标题：与桌面侧栏同语言（缩进 + 左细线） */
+  .doc-toc-drawer ul ul { margin-top: 0.1em; padding-left: 0.85em; border-left: 1px solid var(--border); }
+  .doc-toc-drawer ul ul a { font-size: var(--text-xs); padding-block: 0.28em; }
 
   /* ---------- 404 ---------- */
   .nf { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: var(--nav-h); }
@@ -748,15 +776,51 @@
 
   /* ---------- 移动端（390 基本可用：重动效简化） ---------- */
   @media (max-width: 780px) {
-    .index-row__link { grid-template-columns: 1.6rem 1fr auto; }
+    /* 列表行窄屏两行式：第一行 编号+标题，第二行 日期（缩进对齐标题）。
+       原三轨道模板下第 4 个可见子项（date）被 grid 自动流向挤进第二行的
+       1.6rem 窄轨，日期逐字竖排（实测 2026-09-26 折成 4 行）。
+       ↵ 是 hover 提示，触屏无 hover，直接不占格。 */
+    .index-row__link { grid-template-columns: 1.6rem 1fr; }
+    .index-row__enter { display: none; }
     .index-row__cat { display: none; }
+    .index-row__num { grid-row: 1; }
+    .index-row__title { grid-column: 2; grid-row: 1; }
+    .index-row__date { grid-column: 2; grid-row: 2; white-space: nowrap; }
     .join-card { grid-template-columns: 1fr; }
     .join-card__qr { justify-self: start; }
     .site-footer__grid { grid-template-columns: 1fr; gap: var(--space-l); }
-    /* 详情页移动端：单列，目录从右侧栏改为正文内的抽屉（桌面隐藏、此处显示） */
+    /* 详情页移动端：单列；目录改为右下角悬浮钮，点开浮出面板（不再内联占正文空间） */
     .doc-page { grid-template-columns: 1fr; gap: var(--space-m); }
     .doc-toc { display: none; }
-    .doc-toc-drawer { display: block; }
+    .doc-toc-drawer {
+      display: block;
+      position: fixed;
+      right: 1rem;
+      bottom: max(1.25rem, env(safe-area-inset-bottom));
+      z-index: 40;
+    }
+    .doc-toc-drawer__label {
+      padding: 0.75em 1.15em;
+      background: var(--ink-0);
+      color: var(--paper-0);
+      border-radius: 999px;
+      box-shadow: 0 6px 24px rgba(17, 18, 20, 0.3);
+      letter-spacing: 0.14em;
+    }
+    .doc-toc-drawer__label::after { color: var(--paper-0); }
+    .doc-toc-drawer > nav {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 0.6rem);
+      width: min(19rem, 78vw);
+      max-height: min(62vh, 26rem);
+      overflow: auto;
+      padding: var(--space-m);
+      background: var(--paper-0);
+      border: 1px solid var(--border);
+      border-radius: 0.9rem;
+      box-shadow: 0 14px 44px rgba(17, 18, 20, 0.2);
+    }
     /* 宽表格在窄屏改为可横滑，不再挤压成每列几个字。
        注意不能给 width: max-content——那会让表格元素本身宽于容器、撑破视口（实测溢出 832px）；
        display:block 后浏览器会把 table-cell 包进匿名表格盒，表格语义与列宽计算仍保留。 */

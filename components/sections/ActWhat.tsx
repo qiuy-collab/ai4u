@@ -20,16 +20,28 @@ export default function ActWhat() {
       </p>
       {/* 拱形跑马灯：词链沿一条固定 ∩ 弧（offset-path）循环滑动，
           词贴弧切向自转——轨道静止、词沿轨流动。
-          rm / 无 supports 退化为均匀分布的静态拱。 */}
+          rm / 无 supports 退化为均匀分布的静态拱。
+          track 默认 display:contents（不产生盒，桌面弧布局不受影响）；
+          移动端覆盖为 flex 轨道 + 平移动画，第二组（克隆）用于无缝循环。 */}
       <div className="marquee" role="group" aria-label="AI4U 常聊的词">
-        <ul className="marquee__group">
-          {ACT_WHAT.terms.map((t) => (
-            <li key={t} className="marquee__item">
-              {t}
-              <span className="marquee__x mono" aria-hidden="true">✕</span>
-            </li>
-          ))}
-        </ul>
+        <div className="marquee__track">
+          <ul className="marquee__group">
+            {ACT_WHAT.terms.map((t) => (
+              <li key={t} className="marquee__item">
+                {t}
+                <span className="marquee__x mono" aria-hidden="true">✕</span>
+              </li>
+            ))}
+          </ul>
+          <ul className="marquee__group" aria-hidden="true">
+            {ACT_WHAT.terms.map((t) => (
+              <li key={t} className="marquee__item">
+                {t}
+                <span className="marquee__x mono" aria-hidden="true">✕</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
