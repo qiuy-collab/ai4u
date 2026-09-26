@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DOCS, getAdjacent, getDoc } from "@/content/docs";
+import CodeCopy from "@/components/ui/CodeCopy";
 
 export function generateStaticParams() {
   return DOCS.map((d) => ({ slug: d.slug }));
@@ -61,6 +62,8 @@ export default async function DocPage({
         )}
         {/* 正文 HTML 构建期由 markdown 编译生成（remark 管线），来源仅本仓库 content/docs/*.md */}
         <div className="doc-body" dangerouslySetInnerHTML={{ __html: doc.html }} />
+        {/* 代码块「复制」按钮：客户端注入（components/ui/CodeCopy.tsx） */}
+        <CodeCopy />
         <nav className="doc-adjacent" aria-label="上一篇下一篇">
           {prev ? (
             <Link href={`/docs/${prev.slug}`} rel="prev">← 上一篇：{prev.title}</Link>

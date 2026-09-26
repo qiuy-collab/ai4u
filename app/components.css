@@ -428,13 +428,14 @@
   }
 
   /* ---------- 列表页 ---------- */
-  /* 列表末行到页脚之间留出呼吸，避免直接贴死（与阅读页 padding-bottom 同一节奏） */
-  .docs-index { padding-bottom: calc(var(--section-tight) * 1.5); }
-  .docs-head { padding-top: calc(var(--nav-h) + var(--section-tight)); }
-  .docs-head__title { margin-top: var(--space-s); font-size: var(--text-h2); font-weight: 900; }
-  .docs-head__sub { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.9; }
+  /* 留白口径（2026-09-26 整体压缩一档）：顶部 nav + space-l、底部 space-xl、
+     行内间距一律降一级；不再用 section-tight 倍率的宽松节奏，让首屏直接进入内容 */
+  .docs-index { padding-bottom: var(--space-xl); }
+  .docs-head { padding-top: calc(var(--nav-h) + var(--space-l)); }
+  .docs-head__title { margin-top: var(--space-xs); font-size: var(--text-h2); font-weight: 900; }
+  .docs-head__sub { margin-top: var(--space-xs); color: var(--text-muted); line-height: 1.7; }
   .docs-filter {
-    margin-top: var(--space-l);
+    margin-top: var(--space-m);
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2xs);
@@ -459,38 +460,41 @@
   @media (hover: hover) and (pointer: fine) {
     .docs-filter__btn:hover { border-color: var(--ink-0); color: var(--ink-0); }
   }
-  .docs-list { margin-top: var(--space-l); list-style: none; padding: 0; border-top: 1px solid var(--border); }
-  .docs-empty { margin-top: var(--space-xl); border: 2px dashed var(--border-strong); padding: var(--space-xl) var(--space-l); }
+  .docs-list { margin-top: var(--space-m); list-style: none; padding: 0; border-top: 1px solid var(--border); }
+  .docs-empty { margin-top: var(--space-l); border: 2px dashed var(--border-strong); padding: var(--space-l) var(--space-m); }
   .docs-empty__title { font-size: var(--text-h3); font-weight: 700; }
   .docs-empty__body { margin-top: var(--space-xs); color: var(--text-muted); }
 
   /* ---------- 阅读页 ---------- */
-  .prompt-page { padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: var(--section-tight); }
+  /* 仅供屏幕阅读器：提示词页输出纯文本，视觉标题由浏览器页签承担，这里保留语义 h1 */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  /* 留白口径同列表页：压缩一档，首屏更快进入正文 */
+  .prompt-page { padding-top: calc(var(--nav-h) + var(--space-l)); padding-bottom: var(--space-xl); }
   .prompt-page .doc-body pre { white-space: pre-wrap; }
   /* 提示词页头部的类别行（「部署提示词」）。
      阅读页已按要求不再渲染元信息行，此样式只服务 /prompt/[slug]——不要跟着阅读页一起删。 */
-  .doc-meta { display: flex; flex-wrap: wrap; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
-  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-xl); padding-top: calc(var(--nav-h) + var(--section-tight)); padding-bottom: calc(var(--section-tight) * 1.5); }
+  .doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); font-size: var(--text-xs); color: var(--text-muted); }
+  .doc-page { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-l); padding-top: calc(var(--nav-h) + var(--space-l)); padding-bottom: var(--space-xl); }
   /* 正文列限宽：中文正文用 ch 会偏窄（68ch ≈ 638px ≈ 34 汉字/行），改用 rem 对齐中文阅读宽度 */
   .doc-main { min-width: 0; max-width: 56rem; margin-inline: auto; }
   .doc-back { display: inline-flex; align-items: center; gap: 0.4em; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); text-decoration: none; min-height: 44px; margin-bottom: var(--space-2xs); }
   @media (hover: hover) and (pointer: fine) {
     .doc-back:hover { color: var(--accent-deep); }
   }
-  .doc-title { margin-top: var(--space-s); font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.5rem); font-weight: 900; line-height: 1.2; }
-  .doc-summary { margin-top: var(--space-s); color: var(--text-muted); line-height: 1.75; }
+  .doc-title { margin-top: var(--space-xs); font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.5rem); font-weight: 900; line-height: 1.18; }
+  .doc-summary { margin-top: var(--space-xs); color: var(--text-muted); line-height: 1.7; }
   /* 正文节奏：小 gap 保持段间紧凑，heading 上方拉开形成分节呼吸。
      排版口径：纸白编辑风——层级靠字号/字重/空隙拉开，ember 只做「指示」
      （标题竖标、列表 marker、链接下划线），不做色块填充。 */
-  .doc-body { margin-top: var(--space-l); display: grid; gap: 0.75rem; max-width: 56rem; }
+  .doc-body { margin-top: var(--space-m); display: grid; gap: 0.55rem; max-width: 56rem; }
   .doc-body > * { min-width: 0; } /* grid 子项可收缩，宽表格/长代码不撑破列宽 */
   .doc-body > h2:first-child, .doc-body > h3:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
 
   /* h2 = 章节：通栏细线拉出分节呼吸，左侧 ember 竖标做定位锚点 */
   .doc-body h2 {
     position: relative;
-    margin-top: var(--space-xl);
-    padding: var(--space-m) 0 0 0.8em;
+    margin-top: var(--space-l);
+    padding: var(--space-s) 0 0 0.8em;
     border-top: 1px solid var(--border);
     font-size: var(--text-h3);
     font-weight: 800;
@@ -509,7 +513,7 @@
   /* h3 = 小节：比 h2 轻一档的同族竖标，做层级递进而非并列 */
   .doc-body h3 {
     position: relative;
-    margin-top: var(--space-l);
+    margin-top: var(--space-m);
     padding-left: 0.72em;
     font-size: 1.1875rem;
     font-weight: 750;
@@ -526,11 +530,11 @@
     background: color-mix(in oklab, var(--accent) 55%, var(--ink-0));
   }
   /* h4：只靠字重区分，不再加装饰（三级以上装饰会过载） */
-  .doc-body h4 { margin-top: var(--space-m); font-size: 1.0625rem; font-weight: 750; }
-  .doc-body p { line-height: 1.8; }
+  .doc-body h4 { margin-top: var(--space-s); font-size: 1.0625rem; font-weight: 750; }
+  .doc-body p { line-height: 1.72; }
 
   /* 列表：去掉默认圆点，marker 换成 ember 短横（与 h2/h3 竖标同语言） */
-  .doc-body ul, .doc-body ol { padding-left: 1.5em; display: grid; gap: 0.35rem; line-height: 1.8; }
+  .doc-body ul, .doc-body ol { padding-left: 1.5em; display: grid; gap: 0.28rem; line-height: 1.72; }
   .doc-body ul { list-style: none; }
   .doc-body ul > li { position: relative; }
   .doc-body ul > li::before {
@@ -549,8 +553,8 @@
   .doc-note {
     border-left: 3px solid var(--accent);
     background: color-mix(in oklab, var(--highlight) 22%, var(--paper-0));
-    padding: var(--space-s) var(--space-m);
-    line-height: 1.8;
+    padding: var(--space-xs) var(--space-m);
+    line-height: 1.72;
     font-size: 0.9375em;
   }
   /* 引用（金句）：墨色竖条 + 正文字号微放大，比正文更「站得住」 */
@@ -558,7 +562,7 @@
     border-left: 3px solid var(--ink-0);
     padding: 0.1em 0 0.1em var(--space-m);
     font-size: 1.0625em;
-    line-height: 1.8;
+    line-height: 1.72;
   }
   .doc-quote p + p { margin-top: 0.375rem; }
   /* ---------- markdown 元素（图文教程，全部走 semantic token） ---------- */
@@ -574,13 +578,13 @@
     .doc-body a:hover { text-decoration-color: var(--accent-deep); }
   }
   .doc-body img {
-    margin-block: var(--space-s);
+    margin-block: var(--space-xs);
     height: auto;
     border: 1px solid var(--border-strong);
   }
   .doc-body strong { font-weight: 750; }
   .doc-body del { color: var(--text-muted); }
-  .doc-body hr { border: 0; border-top: 1px solid var(--border-strong); margin-block: var(--space-l); }
+  .doc-body hr { border: 0; border-top: 1px solid var(--border-strong); margin-block: var(--space-m); }
 
   /* 行内代码：单独一段浅底 + 细边，与正文区分但不抢眼 */
   .doc-body code {
@@ -600,12 +604,38 @@
     border: 1px solid var(--border);
     padding: var(--space-s) var(--space-m);
     font-size: 0.875em;
-    line-height: 1.7;
+    line-height: 1.65;
     scrollbar-width: thin;
   }
   /* 仅带语言标签的代码块顶部预留标签栏高度（提示词页的裸 <pre> 不留白） */
   .doc-body pre[data-lang] { padding-top: calc(var(--space-m) + 0.5rem); }
   .doc-body pre code { background: transparent; border: 0; padding: 0; font-size: 1em; }
+  /* 代码块「复制」按钮：由 components/ui/CodeCopy.tsx 在客户端注入（正文是构建期 HTML，
+     不改成组件树）。hover / 聚焦时出现；触屏没有 hover 故常驻。带语言标签的块贴标签栏右端。 */
+  .code-copy {
+    position: absolute;
+    top: 0.42rem;
+    right: 0.42rem;
+    z-index: 2;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    padding: 0.36em 0.62em;
+    color: var(--text-muted);
+    background: color-mix(in oklab, var(--paper-0) 92%, transparent);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out-expo), color var(--dur-fast) var(--ease-out-expo), border-color var(--dur-fast) var(--ease-out-expo);
+  }
+  .doc-body pre[data-lang] .code-copy { top: 0.3rem; }
+  .doc-body pre:hover .code-copy,
+  .doc-body pre:focus-within .code-copy { opacity: 1; }
+  .code-copy:focus-visible { opacity: 1; outline: 2px solid var(--focus); outline-offset: 1px; }
+  @media (hover: none) {
+    .code-copy { opacity: 1; }
+  }
   /* 语言标签：构建期由 rehypeCodeLang 写入 pre[data-lang]，纯 CSS 展示 */
   .doc-body pre[data-lang]::before {
     content: attr(data-lang);
@@ -650,7 +680,7 @@
   @media (hover: hover) and (pointer: fine) {
     .doc-body tbody tr:hover { background: color-mix(in oklab, var(--highlight) 28%, transparent); }
   }
-  .doc-adjacent { margin-top: var(--space-xl); display: flex; justify-content: space-between; gap: var(--space-s); border-top: 1px solid var(--border); padding-top: var(--space-m); }
+  .doc-adjacent { margin-top: var(--space-l); display: flex; justify-content: space-between; gap: var(--space-s); border-top: 1px solid var(--border); padding-top: var(--space-s); }
   .doc-adjacent a { text-decoration: none; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--accent-deep); min-height: 44px; display: inline-flex; align-items: center; }
   @media (hover: hover) and (pointer: fine) {
     .doc-adjacent a:hover { text-decoration: underline; }
