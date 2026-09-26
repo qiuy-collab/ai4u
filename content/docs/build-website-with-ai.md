@@ -482,14 +482,14 @@ Ask me any clarifying questions you need before building.
 
 两种方式各有一份「部署提示词」，放在项目仓库的 prompt 里：
 
-- GitHub Pages：[GitHub Pages 部署提示词](https://qiuy-collab.github.io/AI4U/prompt/github_page.md)
-- Cloudflare Pages：[Cloudflare Pages 部署提示词](https://qiuy-collab.github.io/AI4U/prompt/cloudflare_page.md)
+- GitHub Pages：[GitHub Pages 部署提示词](https://ravicc02.github.io/AI4U/prompt/github_page.md)
+- Cloudflare Pages：[Cloudflare Pages 部署提示词](https://ravicc02.github.io/AI4U/prompt/cloudflare_page.md)
 
 用法就一步——把下面这段复制给 Agent（Claude Code / Codex / NewMax 都行）：
 
 ```
 帮我把当前项目部署到 GitHub Pages。
-先读 https://qiuy-collab.github.io/AI4U/prompt/github_page.md ，
+先读 https://ravicc02.github.io/AI4U/prompt/github_page.md ，
 按里面的步骤来。需要我提供什么凭证，先告诉我，再开始操作。
 ```
 

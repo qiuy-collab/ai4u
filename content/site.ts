@@ -2,7 +2,7 @@ export const SITE = {
   name: "AI4U",
   nameLong: "AI4U · AI for You",
   tagline: "把 AI 用成日常",
-  url: "https://qiuy-collab.github.io/AI4U", // GitHub Pages 地址；换正式域名时改这里
+  url: "https://ravicc02.github.io/AI4U", // GitHub Pages 地址；换正式域名时改这里
   join: {
     groupLabel: "微信群",
     hint: "扫码进群，和我们一起聊 AI",
@@ -12,7 +12,7 @@ export const SITE = {
 } as const;
 
 /* 站点仓库地址 — 导航栏 GitHub 图标入口 */
-export const REPO = "https://github.com/qiuy-collab/AI4U";
+export const REPO = "https://github.com/ravicc02/AI4U";
 
 /* 右上角导航 — 只留两个入口 */
 export const NAV = [

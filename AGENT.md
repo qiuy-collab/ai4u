@@ -84,7 +84,7 @@ node scripts/probe.mjs   # 验收 probe（BASE_URL 默认 3111，用系统 Edge�
 
 ## 部署
 
-GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` → CI 以 `GITHUB_PAGES=true` 构建（此时启用 `output: 'export'` + `basePath: /AI4U`，本地构建不受影响）→ 部署到 `https://qiuy-collab.github.io/AI4U/`。
+GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` → CI 以 `GITHUB_PAGES=true` 构建（此时启用 `output: 'export'` + `basePath: /AI4U`，本地构建不受影响）→ 部署到 `https://ravicc02.github.io/AI4U/`。
 
 **注意**：GitHub Pages 的项目路径**大小写敏感**，`basePath` 必须与仓库名逐字一致。仓库名从 `ai4u` 改为 `AI4U` 时，`next.config.ts` 的 `basePath`、`content/docs.ts` 的 `applyBasePath`、`content/site.ts` 的 `SITE.url` 三处必须同步改，否则全站资源 404。
 
@@ -94,7 +94,7 @@ GitHub Pages，`.github/workflows/deploy.yml` 自动部署：push 到 `main` →
 
 | 字段 | 现状 | 补什么 |
 |---|---|---|
-| `SITE.url` | `https://qiuy-collab.github.io/AI4U` | 已指向 Pages；换正式域名时改这里（影响 OG / canonical / sitemap） |
+| `SITE.url` | `https://ravicc02.github.io/AI4U` | 已指向 Pages；换正式域名时改这里（影响 OG / canonical / sitemap） |
 | `SITE.join.qr` | `public/wechat-group-qr.png` | 微信群二维码（**有有效期**，换群或过期时替换这张图） |
 
 品牌图（favicon / apple-icon / OG 卡）是 `public/` 静态文件，由 `node scripts/generate-assets.mjs` 生成，改设计后重跑脚本，不要再建 ImageResponse route（静态导出下产物为空目录，线上会 404）。
