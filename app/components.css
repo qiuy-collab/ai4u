@@ -35,10 +35,8 @@
     text-decoration: none;
     font-size: var(--text-sm);
   }
-  .site-nav__enter { opacity: 0; transition: opacity var(--dur-fast) var(--ease-out-expo); }
   @media (hover: hover) and (pointer: fine) {
     .site-nav__link:hover { opacity: 1; text-decoration: underline; }
-    .site-nav__link:hover .site-nav__enter { opacity: 1; }
   }
   .site-nav__link:focus-visible { outline-color: var(--night-1); }
   .skip {
@@ -81,10 +79,13 @@
     color: var(--text-muted);
   }
   /* hero 随滚动被「推开」：scrub 直接映射用户滚动，非自主运动。
-     from 态不落静态规则；不支持 / reduced-motion 时内容常显 */
+     from 态不落静态规则；不支持 / reduced-motion 时内容常显。
+     注：hint 不入 sink 组——同元素再声明 animation shorthand 会整条覆盖
+     （下方 hero-fade 同特异性且源序在后），sink 会沦为死代码；
+     hint 在 hero 内随幕滚出即天然退场 */
   @supports (animation-timeline: scroll()) {
     @media (prefers-reduced-motion: no-preference) {
-      .hero__title, .hero__prompt, .hero__hint {
+      .hero__title, .hero__prompt {
         animation: hero-sink linear both;
         animation-timeline: scroll(root);
         animation-range: 0 70vh;
@@ -359,7 +360,7 @@
   /* 悬停手感：卡体轻抬 + 边框 ember 呼应（与全站 hover 范式一致） */
   @media (hover: hover) and (pointer: fine) {
     .join-card {
-      transition: transform var(--dur-m, 0.25s) ease, border-color var(--dur-m, 0.25s) ease, box-shadow var(--dur-m, 0.25s) ease;
+      transition: transform var(--dur-std) var(--ease-out-expo), border-color var(--dur-std) var(--ease-out-expo), box-shadow var(--dur-std) var(--ease-out-expo);
     }
     .join-card:hover {
       transform: translateY(-3px);
@@ -396,11 +397,8 @@
     cursor: pointer;
     transition: background-color var(--dur-fast) var(--ease-out-expo), transform 90ms var(--ease-out-expo);
   }
-  .btn--secondary { background: transparent; color: var(--text); border-color: var(--border-strong); }
-  .btn--quiet { background: transparent; color: var(--text-muted); padding-inline: 0; }
   @media (hover: hover) and (pointer: fine) {
     .btn--primary:hover { background: var(--accent-hover); }
-    .btn--secondary:hover { border-color: var(--ink-0); }
   }
   .btn:active { transform: scale(0.98); }
   .btn[disabled] { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
@@ -578,7 +576,6 @@
   }
   .site-nav__logo { font-weight: 800; letter-spacing: 0.08em; }
   .site-nav__link { opacity: 0.72; transition: opacity var(--dur-fast) var(--ease-out-expo), color var(--dur-fast) var(--ease-out-expo); }
-  .site-nav__enter { display: none; }
   @media (hover: hover) and (pointer: fine) {
     .site-nav__link:hover { opacity: 1; color: var(--hl-0); text-decoration: none; }
   }
@@ -622,7 +619,8 @@
         animation-range: entry 5% cover 32%;
       }
       @keyframes what-in {
-        from { opacity: 0.12; filter: blur(16px); transform: translateY(0.18em); }
+        /* blur 起点 10px：scrub 期间每帧重绘大字，16px 成本过高；10px 保留洇开感 */
+        from { opacity: 0.12; filter: blur(10px); transform: translateY(0.18em); }
         to { opacity: 1; filter: blur(0); transform: translateY(0); }
       }
       .mega-wash--1 { animation: wash-1 linear both; animation-timeline: view(); animation-range: cover 8% cover 58%; }
@@ -643,8 +641,10 @@
     }
   }
 
-  .index-row__link { transition: padding-inline var(--dur-std) var(--ease-out-expo), background-color var(--dur-std) var(--ease-out-expo); }
-  .index-row__link:hover { padding-inline: var(--space-s); background: rgba(246, 207, 69, 0.18); }
+  /* hover 反馈 = 背景色 + enter 滑入 + 标题荧光（三者均 compositor/paint 安全）；
+     不动画 padding-inline（layout 属性，每帧 reflow） */
+  .index-row__link { transition: background-color var(--dur-std) var(--ease-out-expo); }
+  .index-row__link:hover { background: rgba(246, 207, 69, 0.18); }
   .index-row__title { font-weight: 750; }
 
   .act-join { position: relative; overflow: hidden; background: var(--ember-0); color: var(--ink-0); }
