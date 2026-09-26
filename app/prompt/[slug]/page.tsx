@@ -4,11 +4,13 @@ import path from "node:path";
 import { notFound } from "next/navigation";
 import { SITE } from "@/content/site";
 import { PROMPTS } from "@/content/prompts";
+import CodeCopy from "@/components/ui/CodeCopy";
 
 /**
  * 部署提示词页（/prompt/[slug]）。
- * 纯文本源在 public/prompt/<slug>.txt——网页与 .txt 共用同一份内容：
- * 用户把页面里的提示词复制给 Agent，或让 Agent 直接读取 .txt 地址。
+ * 页面直接输出 public/prompt/<slug>.md 的原始文本，不做渲染处理——
+ * 与 /prompt/<slug>.md 直链共用同一份内容：
+ * 用户从页面复制给 Agent，或让 Agent 直接读 .md 地址。
  * 只有两个 slug，静态导出时预生成。
  */
 
@@ -39,7 +41,7 @@ export default async function PromptPage({
   let body: string;
   try {
     body = fs.readFileSync(
-      path.join(process.cwd(), "public", "prompt", `${slug}.txt`),
+      path.join(process.cwd(), "public", "prompt", `${slug}.md`),
       "utf8",
     );
   } catch {
@@ -49,22 +51,15 @@ export default async function PromptPage({
   return (
     <div className="prompt-page gutter">
       <article className="doc-main">
-        <header>
-          <p className="doc-meta mono">
-            <span>部署提示词</span>
-          </p>
-          <h1 className="doc-title">{meta.title}</h1>
-          <p className="doc-summary">{meta.summary}</p>
-        </header>
+        <h1 className="sr-only">{meta.title}</h1>
+        <p className="doc-meta mono">
+          <span>部署提示词 · 原始文本</span>
+          <a href={`${SITE.url}/prompt/${slug}.md`}>.md 原文</a>
+        </p>
         <div className="doc-body">
-          <p>
-            纯文本地址（方便 Agent 直接读取）：
-            <code>
-              {SITE.url}/prompt/{slug}.txt
-            </code>
-          </p>
           <pre>{body}</pre>
         </div>
+        <CodeCopy />
       </article>
     </div>
   );
