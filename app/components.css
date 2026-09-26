@@ -578,6 +578,9 @@
   }
   .site-nav__logo { font-weight: 800; letter-spacing: 0.08em; }
   .site-nav__link { opacity: 0.72; transition: opacity var(--dur-fast) var(--ease-out-expo), color var(--dur-fast) var(--ease-out-expo); }
+  .site-nav__links { align-items: center; }
+  .site-nav__icon { display: inline-flex; align-items: center; }
+  .site-nav__icon svg { display: block; }
   @media (hover: hover) and (pointer: fine) {
     .site-nav__link:hover { opacity: 1; color: var(--hl-0); text-decoration: none; }
   }

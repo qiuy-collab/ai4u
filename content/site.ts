@@ -11,6 +11,9 @@ export const SITE = {
   },
 } as const;
 
+/* 站点仓库地址 — 导航栏 GitHub 图标入口 */
+export const REPO = "https://github.com/qiuy-collab/ai4u";
+
 /* 右上角导航 — 只留两个入口 */
 export const NAV = [
   { label: "文档", href: "/docs" },
