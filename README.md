@@ -44,9 +44,9 @@ AI4U（**AI for You**）是一个面向所有对 AI 好奇的人的交流社区�
 
 | 内容 | 讲什么 | 大概要花 |
 | :--- | :--- | :--- |
-| [**What's Agent?**](https://qiuy-collab.github.io/ai4u/docs/whats-agent/) | 从「会聊天」到「能干活」：用官方文档和真实案例，把 Agent、Prompt、Context、Skills 四个概念讲清楚 | 18 分钟 |
-| [**如何用 AI 创建自己的网站**](https://qiuy-collab.github.io/ai4u/docs/ai-create-website/) | 从选客户端、第一次对话，到弄懂前后端，再把网站发布到 GitHub Pages 和 Cloudflare Pages | 25 分钟 |
-| [**AI 提效办公**](https://qiuy-collab.github.io/ai4u/docs/ai-office/) | 会议纪要、文档写作、PPT、表格、专业工作流，五个场景的真实案例与上手方法 | 14 分钟 |
+| [**Agent 是什么**](https://qiuy-collab.github.io/ai4u/docs/what-is-agent/) | 从「一问一答」到「持续干活」：沿 LLM → Prompt → Tool → MCP → Agent → Skill 把十个核心概念串成一条链 | 25 分钟 |
+| [**如何用 AI 创建并发布自己的网站**](https://qiuy-collab.github.io/ai4u/docs/build-website-with-ai/) | 从装客户端、配 Key、把 Agent 用明白，到弄懂前后端，最后把发布交给 Agent 自动化 | 25 分钟 |
+| [**AI 提效办公**](https://qiuy-collab.github.io/ai4u/docs/ai-office-productivity/) | 从写好一条提示词，到按场景取用现成模板，最后拼成能持续运转的工作流 | 18 分钟 |
 
 > 三篇都在网站里按阅读版式排版，带目录、阅读进度和上/下一篇 —— [去 /docs 看全部](https://qiuy-collab.github.io/ai4u/docs/)
 
@@ -55,16 +55,16 @@ AI4U（**AI for You**）是一个面向所有对 AI 好奇的人的交流社区�
 <table>
   <tr>
     <td width="100%" align="center" valign="top">
-      <img src="public/images/docs/whats-agent/pattern-agent-loop.png" width="100%" alt="Agent 循环示意图">
+      <img src="public/images/docs/what-is-agent/what-is-agent-loop.webp" width="100%" alt="普通对话是一问一答，Agent 是持续循环">
       <br>
-      <sub>Agent 怎么把一件事从头跑到尾</sub>
+      <sub>普通对话是一问一答，Agent 是持续循环</sub>
     </td>
   </tr>
   <tr>
     <td width="100%" align="center" valign="top">
-      <img src="public/images/docs/whats-agent/pattern-enhanced-llm.png" width="100%" alt="只有模型 与 接上工具之后 的对比">
+      <img src="public/images/docs/ai-office-productivity/office-scene-intro.jpg" width="100%" alt="按场景分类的提示词清单">
       <br>
-      <sub>只聊天，和接上工具之后，差别在哪</sub>
+      <sub>把提示词按场景归好类，用的时候直接取</sub>
     </td>
   </tr>
 </table>
@@ -73,9 +73,9 @@ AI4U（**AI for You**）是一个面向所有对 AI 好奇的人的交流社区�
 
 顺序没有硬规定，看你手头要解决什么：
 
-- **完全没接触过** → 先看 [What's Agent?](https://qiuy-collab.github.io/ai4u/docs/whats-agent/)，把几个名词认全，后面会顺很多
-- **想做个自己的网站** → [如何用 AI 创建自己的网站](https://qiuy-collab.github.io/ai4u/docs/ai-create-website/) 可以跟着一步步走
-- **只想让日常的活快点干完** → [AI 提效办公](https://qiuy-collab.github.io/ai4u/docs/ai-office/) 里挑一个你最烦的场景试
+- **完全没接触过** → 先看 [Agent 是什么](https://qiuy-collab.github.io/ai4u/docs/what-is-agent/)，把几个名词认全，后面会顺很多
+- **想做个自己的网站** → [如何用 AI 创建并发布自己的网站](https://qiuy-collab.github.io/ai4u/docs/build-website-with-ai/) 可以跟着一步步走
+- **只想让日常的活快点干完** → [AI 提效办公](https://qiuy-collab.github.io/ai4u/docs/ai-office-productivity/) 里挑一个你最烦的场景试
 
 ## 加入我们
 
